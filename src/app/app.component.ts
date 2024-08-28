@@ -1,13 +1,29 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
+
+interface MenuItem {
+  title: string,
+  link: string,
+  id: number
+}
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink]
 })
 export class AppComponent {
-  title = 'folkapp-web';
+  menu: MenuItem[] = [
+    <MenuItem>{
+      title: 'ანსამბლები',
+      link: '/artists/2'
+    },
+    <MenuItem>{
+      title: 'ძველი ჩანაწერები',
+      link: '/artists/1'
+    }
+  ]
 }

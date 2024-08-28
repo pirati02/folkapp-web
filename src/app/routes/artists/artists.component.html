@@ -1,0 +1,19 @@
+<div class="d-flex full-width full-height">
+    <div class="artists-side">
+        <ul>
+            <li *ngFor="let artist of (artists$ | async)">
+                <a (click)="selectedArtist = artist" class="pill"> 
+                    <span>
+                        {{ artist.name }}
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="divider" role="separator" aria-label="Divider" *ngIf="selectedArtist"></div>
+    <div class="artists-side" *ngIf="selectedArtist">
+        <span>
+            {{selectedArtist?.name}}
+        </span>
+    </div>
+</div>
