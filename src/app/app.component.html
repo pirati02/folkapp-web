@@ -1,9 +1,9 @@
 <main class="main">
   <div class="content">
     <div class="left-side">
-        <ul>
-          <li *ngFor="let item of menu" >
-            <a class="pill" [routerLink]="[item.link]">
+        <ul class="list">
+          <li *ngFor="let item of menu" class="list-item">
+            <a class="pill" (click)="navigate(item)" [ngClass]="{'selected-menu-item': item.isSelected}">
               <span>{{ item.title }}</span>
             </a>
           </li>
@@ -13,5 +13,10 @@
     <div class="right-side">
       <router-outlet></router-outlet>
     </div>
+  </div>
+  <div class="player-container">
+    <audio [src]="mediaController.selectedSong?.path" autoplay controls>
+      <source *ngFor="let song of mediaController.playList" [src]="song.path" type="audio/mpeg">
+    </audio>
   </div>
 </main>

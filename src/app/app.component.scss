@@ -1,0 +1,21 @@
+.left-side {
+    min-width: 20%;
+}
+
+.right-side {
+    min-width: 80%;
+}
+
+.selected-menu-item {
+    background-color: chocolate;
+    color: white;
+}
+
+.player-container {
+    position: fixed;
+    bottom: 2rem;
+
+    audio {
+        width: calc(100vw / 2);
+    }
+}

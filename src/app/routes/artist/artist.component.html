@@ -1,0 +1,42 @@
+<div class="d-flex full-width full-height align-items-center flex-column">
+    <div class="tabs-side d-flex flex-row">
+        <div class="tab">
+            <a class="pill" (click)="songType = 1" *ngIf="songs.length > 0" [ngClass]="{'selected-tab': songType == 1}"> 
+                <span>
+                    სიმღერები
+                </span>
+            </a> 
+        </div>
+        <div class="tab">
+            <a class="pill" (click)="songType = 2" *ngIf="chants.length > 0" [ngClass]="{'selected-tab': songType == 2}"> 
+                <span>
+                    საგალობლები
+                </span>
+            </a>
+        </div>
+    </div>
+
+    <div class="songs" *ngIf="songType == 1 && songs.length > 0">
+        <ul class="list">
+            <li *ngFor="let song of songs" class="list-item">
+                <a (click)="selectSong(song)" class="pill" [ngClass]="{'selected-song': song.isSelected}"> 
+                    <span>
+                        {{ song.name }}
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="songs"  *ngIf="songType == 2 && chants.length > 0">
+        <ul class="list">
+            <li *ngFor="let song of chants" class="list-item">
+                <a (click)="selectSong(song)" class="pill" [ngClass]="{'selected-song': song.isSelected}"> 
+                    <span>
+                        {{ song.name }}
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

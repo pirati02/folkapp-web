@@ -1,0 +1,30 @@
+.left-side {
+    min-width: 30%;
+}
+
+.right-side {
+    min-width: 70%;
+}
+
+.tabs-side {
+    gap: 1rem;
+    max-height: 40px;
+
+    .tab {
+        cursor: pointer;
+    }
+
+    .selected-tab {
+        background-color: chocolate;
+        color: white;
+    }
+}
+
+.selected-song {
+    background-color: chocolate;
+    color: white;
+}
+
+.songs {
+    width: 90%;
+}

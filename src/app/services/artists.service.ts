@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
-import { ArtistType } from "../models/artist.type";
+import { ArtistType } from "../models/artist-type";
 import { Artist } from "../models/artist";
 import { map, Observable } from "rxjs";
 import { BaseResponse } from "../models/base-response";
