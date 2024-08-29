@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { AppModule } from './app.module';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export var baseUrlProvider: ValueProvider = <ValueProvider> {
   provide: 'BASE_URL',
@@ -14,6 +15,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     baseUrlProvider,
-    importProvidersFrom(AppModule)
+    importProvidersFrom(AppModule), provideAnimationsAsync()
   ]
 };

@@ -21,4 +21,10 @@ export class ArtistsService {
             map(data => data.body)
         );
     }
+
+    artistById(id: string):  Observable<Artist> { 
+        return this.httpClient.get<BaseResponse<Artist>>(this.baseUrl + '/Artists/' + id).pipe(
+            map(data => data.body)
+        );
+    }
 }

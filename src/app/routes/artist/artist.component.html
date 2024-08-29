@@ -1,42 +1,61 @@
-<div class="d-flex full-width full-height align-items-center flex-column">
-    <div class="tabs-side d-flex flex-row">
-        <div class="tab">
-            <a class="pill" (click)="songType = 1" *ngIf="songs.length > 0" [ngClass]="{'selected-tab': songType == 1}"> 
-                <span>
-                    სიმღერები
-                </span>
-            </a> 
-        </div>
-        <div class="tab">
-            <a class="pill" (click)="songType = 2" *ngIf="chants.length > 0" [ngClass]="{'selected-tab': songType == 2}"> 
-                <span>
-                    საგალობლები
-                </span>
-            </a>
-        </div>
+<div class="artist-container d-flex flex-column">
+    <div class="close-container d-flex flex-row justify-content-center">
+        <button mat-button matRipple matRippleColor="grey" (click)="router.navigate(['..'])">
+            <mat-icon>close</mat-icon>
+        </button>
+
+        <h2 style="width: 80%; text-align: center;">
+            {{artist?.name}}
+        </h2>
     </div>
 
-    <div class="songs" *ngIf="songType == 1 && songs.length > 0">
-        <ul class="list songs-list">
-            <li *ngFor="let song of songs" class="list-item">
-                <a (click)="selectSong(song)" class="pill" [ngClass]="{'selected-song': song.isSelected}"> 
-                    <span>
-                        {{ song.name }}
+    <div class="d-flex full-width full-height align-items-center flex-column">
+        <div class="tabs-side d-flex flex-row">
+            <div class="tab" *ngIf="songs.length > 0">
+                <a class="d-flex justify-content-center" (click)="songType = 1"
+                    [ngClass]="{'selected-tab': songType == 1}">
+                    <span [ngClass]="{'selected-tab': songType == 1}">
+                        სიმღერები
                     </span>
                 </a>
-            </li>
-        </ul>
-    </div>
-    
-    <div class="songs"  *ngIf="songType == 2 && chants.length > 0">
-        <ul class="list songs-list">
-            <li *ngFor="let song of chants" class="list-item">
-                <a (click)="selectSong(song)" class="pill" [ngClass]="{'selected-song': song.isSelected}"> 
-                    <span>
-                        {{ song.name }}
+            </div>
+            <div class="tab" *ngIf="chants.length > 0">
+                <a class="d-flex justify-content-center" (click)="songType = 2"
+                    [ngClass]="{'selected-tab': songType == 2}">
+                    <span [ngClass]="{'selected-tab': songType == 2}">
+                        საგალობლები
                     </span>
                 </a>
-            </li>
-        </ul>
+            </div>
+        </div>
+        
+        <div class="loader d-flex align-items-center justify-content-center flex-column" *ngIf="loading">
+            <mat-spinner matSuffix *ngIf="loading" mode="indeterminate" diameter="50" color="red"></mat-spinner>
+            <h4 *ngIf="showEmptyListText">ჩანაწერები ვერ მოიძებნა</h4>
+        </div>
+
+        <div class="songs" *ngIf="songType == 1 && songs.length > 0 && !loading">
+            <mat-list class="list songs-list">
+                <mat-list-item style="padding: 0;" *ngFor="let song of songs" class="list-item">
+                    <a (click)="selectSong(song)">
+                        <span matListItemTitle style="margin: 0;" [ngClass]="{'selected-song': song.isSelected}">
+                            {{ song.name }}
+                        </span>
+                    </a>
+                </mat-list-item>
+            </mat-list>
+        </div>
+
+        <div class="songs" *ngIf="songType == 2 && chants.length > 0 && !loading">
+            <mat-list class="list songs-list">
+                <mat-list-item *ngFor="let song of chants" class="list-item">
+                    <a (click)="selectSong(song)">
+                        <span matListItemTitle style="margin: 0;" [ngClass]="{'selected-song': song.isSelected}">
+                            {{ song.name }}
+                        </span>
+                    </a>
+                </mat-list-item>
+            </mat-list>
+        </div>
     </div>
 </div>

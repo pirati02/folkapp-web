@@ -1,18 +1,6 @@
 <main class="main">
   <div class="content">
-    <div class="left-side">
-        <ul class="list">
-          <li *ngFor="let item of menu" class="list-item">
-            <a class="pill" (click)="navigate(item)" [ngClass]="{'selected-menu-item': item.isSelected}">
-              <span>{{ item.title }}</span>
-            </a>
-          </li>
-        </ul>
-    </div>
-    <div class="divider" role="separator" aria-label="Divider"></div>
-    <div class="right-side">
-      <router-outlet></router-outlet>
-    </div>
+    <router-outlet></router-outlet>
   </div>
   <div class="player-container">
     <audio [src]="mediaController.selectedSong?.path" autoplay controls>

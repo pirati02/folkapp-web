@@ -6,11 +6,6 @@
     min-width: 80%;
 }
 
-.selected-menu-item {
-    background-color: chocolate;
-    color: white;
-}
-
 .player-container {
     position: fixed;
     bottom: 2rem;
@@ -20,12 +15,16 @@
     }
 }
 
-@media only screen and (min-width: 400px) {
+@media only screen and (max-width: 480px) and (min-width: 320px)  {
     .right-side {
         flex-direction: row;
     }
 
     .player-container { 
         bottom: 7rem;
+
+        audio {
+            width: 90vw;
+        }
     }
 }

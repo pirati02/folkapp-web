@@ -4,20 +4,31 @@ import { NgModule } from "@angular/core";
 import { ArtistsComponent } from "./routes/artists/artists.component";
 import { RouterOutlet } from "@angular/router";
 import { ArtistComponent } from "./routes/artist/artist.component";
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 
 @NgModule({
     providers: [
         provideHttpClient(withFetch(), withJsonpSupport())
     ],
-    declarations:[
+    declarations: [
         ArtistsComponent,
         ArtistComponent
     ],
-    imports:[
+    imports: [
         CommonModule,
-        RouterOutlet
+        RouterOutlet,
+        MatIconModule,
+        MatButtonModule,
+        MatDividerModule,
+        MatListModule,
+        MatProgressSpinnerModule
     ]
 })
-export class AppModule{
+export class AppModule {
 
 }

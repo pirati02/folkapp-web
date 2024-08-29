@@ -1,17 +1,28 @@
-<div class="d-flex full-width full-height">
-    <div class="artists-side">
-        <ul class="list artist-list">
-            <li *ngFor="let artist of artists"  class="list-item">
-                <a (click)="selectArtist(artist)" class="pill" [ngClass]="{'selected-artist': artist.isSelected}"> 
-                    <span>
-                        {{ artist.name }}
-                    </span>
-                </a>
-            </li>
-        </ul>
+<div class="left-side">
+    <div class="tabs-side d-flex flex-row">
+        <div class="tab" *ngFor="let item of menu">
+            <a class="d-flex justify-content-center" (click)="navigate(item)"
+                [ngClass]="{'selected-tab': item.isSelected}">
+                <span>
+                    {{ item.title }}
+                </span>
+            </a>
+        </div>
     </div>
-    
-    <div class="artist-side" *ngIf="selectedArtist">
-        <app-artist [artist]="selectedArtist"></app-artist>
+</div>
+
+<div class="right-side">
+    <div class="d-flex full-width full-height">
+        <div class="artists-side">
+            <mat-list class="list artist-list">
+                <mat-list-item *ngFor="let artist of artists" class="list-item">
+                    <a (click)="selectArtist(artist)" [ngClass]="{'selected-artist': artist.isSelected}">
+                        <span matListItemTitle style="margin: 0;">
+                            {{ artist.name }}
+                        </span>
+                    </a>
+                </mat-list-item>
+            </mat-list>
+        </div>
     </div>
 </div>

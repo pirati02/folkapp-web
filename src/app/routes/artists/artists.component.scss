@@ -1,3 +1,5 @@
+@import '../../../variables.scss';
+
 .artists-side {
     min-width: 30%;
 }
@@ -7,14 +9,16 @@
 }
 
 .selected-artist{
-    background-color: chocolate;
-    color: white;
+    background-color: $choco;
+    color: black;
 }
 
-
-@media only screen and (min-width: 400px) {
+@media only screen and (max-width: 480px) and (min-width: 320px)  {
     .artist-list {
         flex-direction: column;
         height: 100vh !important;
+    }
+    .artists-side {
+        width: 100%;
     }
 }
