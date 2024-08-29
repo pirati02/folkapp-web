@@ -111,7 +111,6 @@
   .divider {
     width: 1px;
     background: var(--red-to-pink-to-purple-vertical-gradient);
-    margin-inline: 0.5rem;
   }
 
   .pill-group {
@@ -188,7 +187,6 @@
       height: 1px;
       width: 100%;
       background: var(--red-to-pink-to-purple-horizontal-gradient);
-      margin-block: 1.5rem;
     }
   }
 
@@ -204,3 +202,13 @@
       cursor: pointer;
     }
   }
+
+
+
+@media only screen and (min-width: 400px) {
+  .list {
+      flex-direction: row;
+      padding: 0;
+      height: 50px;
+  }
+}

@@ -19,3 +19,13 @@
         width: calc(100vw / 2);
     }
 }
+
+@media only screen and (min-width: 400px) {
+    .right-side {
+        flex-direction: row;
+    }
+
+    .player-container { 
+        bottom: 7rem;
+    }
+}

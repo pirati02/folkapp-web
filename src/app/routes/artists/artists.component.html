@@ -1,6 +1,6 @@
 <div class="d-flex full-width full-height">
     <div class="artists-side">
-        <ul class="list">
+        <ul class="list artist-list">
             <li *ngFor="let artist of artists"  class="list-item">
                 <a (click)="selectArtist(artist)" class="pill" [ngClass]="{'selected-artist': artist.isSelected}"> 
                     <span>
@@ -10,7 +10,7 @@
             </li>
         </ul>
     </div>
-    <div class="divider" role="separator" aria-label="Divider" *ngIf="selectedArtist"></div>
+    
     <div class="artist-side" *ngIf="selectedArtist">
         <app-artist [artist]="selectedArtist"></app-artist>
     </div>
