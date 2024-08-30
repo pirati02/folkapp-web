@@ -123,6 +123,7 @@ export class ArtistComponent {
         if(play) {
             const playList = this.songType == SongType.Song ? this.songs : this.chants;
             this.mediaController.playList = playList;
+            this.mediaController.selectedArtist = this.artist;
             this.mediaController.play(song);
         }
     }

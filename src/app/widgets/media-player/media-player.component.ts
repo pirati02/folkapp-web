@@ -9,16 +9,29 @@ import { RepeatType } from "../../models/repeate.type";
 })
 export class MediaPlayerComponent {
 
+    isExpanded = false;
     repeatType?: RepeatType;
-    
+
+    get seconds(): string {
+        let seconds = this.mediaController.getDuration();
+        seconds %= 3600;
+        let minutes = Math.floor(seconds / 60);
+        let secs = Math.floor(seconds % 60);
+
+        return [minutes, secs]
+            .map(v => v < 10 ? '0' + v : v)
+            .filter((v, i) => v !== '00' || i > 0)
+            .join(':');
+    }
+
     constructor(
         public mediaController: MediaController
-    ){
+    ) {
         this.repeatType = mediaController.getRepeatType();
     }
 
     playOrPause() {
-        if(this.mediaController.isPlaying){
+        if (this.mediaController.isPlaying) {
             this.mediaController.pause();
             return;
         }
@@ -26,7 +39,17 @@ export class MediaPlayerComponent {
         this.mediaController.resume();
     }
 
+    stop() {
+        this.mediaController.stop();
+    }
+
     changeRepeateType() {
         this.repeatType = this.mediaController.changeRepeateType()
+    }
+
+    expand() {
+        if (this.mediaController.isPlaying) {
+            this.isExpanded = true;
+        }
     }
 }
