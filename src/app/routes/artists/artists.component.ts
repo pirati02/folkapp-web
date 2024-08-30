@@ -4,36 +4,32 @@ import { tap } from "rxjs";
 import { Artist } from "../../models/artist";
 import { ArtistType } from "../../models/artist-type";
 import { ActivatedRoute, Router } from "@angular/router";
-
-interface MenuItem {
-    title: string,
-    link: string,
-    id: number,
-    isSelected: boolean
-}
-
+import { BottomBarItem } from "../../widgets/bottom-bar/bottom-bar.component";
+ 
 @Component({
     selector: 'app-artists',
     templateUrl: './artists.component.html',
     styleUrls: ['./artists.component.scss']
 })
 export class ArtistsComponent implements OnInit {
-    menu: MenuItem[] = [
-        <MenuItem>{
+    bottomBarItems: BottomBarItem[] = [
+        <BottomBarItem>{
             id: 2,
+            icon: 'group',
             title: 'ანსამბლები',
             link: '/artists/2',
             isSelected: true
         },
-        <MenuItem>{
+        <BottomBarItem>{
             id: 1,
+            icon: 'system_update_alt',
             title: 'ძველი ჩანაწერები',
             link: '/artists/1',
             isSelected: false
         }
     ]
 
-    selectedMenuItem: MenuItem = this.menu[0];
+    selectedBottomBarItem: BottomBarItem = this.bottomBarItems[0];
     artists: Artist[] = [];
     private artistType: ArtistType = ArtistType.ARTIST;
 
@@ -44,8 +40,10 @@ export class ArtistsComponent implements OnInit {
     ) {
         this.route.params.pipe(tap(items => {
             this.artistType = items["id"] || ArtistType.ARTIST;
-            const menuItem = this.artistType == ArtistType.ARTIST ? this.menu[0] : this.menu[1];
-            this.navigate(menuItem);
+            const item = this.artistType == ArtistType.ARTIST 
+                            ? this.bottomBarItems[0] 
+                            : this.bottomBarItems[1];
+            this.selectedBottomBarItem = item;
             this.loadArtists();
         })).subscribe();
     }
@@ -59,19 +57,15 @@ export class ArtistsComponent implements OnInit {
             .subscribe(data => this.artists = data);
     }
 
-
-    navigate(menuItem: MenuItem) {
-        this.menu.forEach(item => item.isSelected = false);
-        menuItem.isSelected = true;
-        this.selectedMenuItem = menuItem;
-        this.router.navigate([menuItem.link]);
-    }
-
     selectArtist(artist: Artist): void {
         this.artists.filter(item => item.id != artist.id)
             .forEach(item => item.isSelected = false);
 
         artist!.isSelected = true;
         this.router.navigateByUrl('/artist/' + artist.id);
+    }
+
+    navigate(bottomBarItem: BottomBarItem) {
+        this.router.navigate([bottomBarItem.link]);
     }
 }

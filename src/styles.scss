@@ -18,6 +18,10 @@
 
 .justify-content-center {
   justify-content: center;
+} 
+
+.place-self-center{
+  place-self: center;
 }
 
 .full-width {
@@ -28,110 +32,69 @@
   height: 100%;
 }
 
-h1 {
-  font-size: 3.125rem;
-  color: var(--gray-900);
-  font-weight: 500;
-  line-height: 100%;
-  letter-spacing: -0.125rem;
-  margin: 0;
-  font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol";
-}
-
-p {
-  margin: 0;
-  color: var(--gray-700);
+.position-sticky {
+  position: sticky;
 }
 
 body {
-  padding: 0;
   margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #fff;
 }
 
-main {
-  width: 100%;
-  min-height: 100%;
+.header {
+  user-select: none;
+  background-color: #f5f2de;
+  padding: 10px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+}
+
+.footer button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.footer-icons {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-  box-sizing: inherit;
-  position: relative;
+  gap: 20px;
 }
 
-.angular-logo {
-  max-width: 9.2rem;
+.footer-icons svg {
+  width: 24px;
+  height: 24px;
 }
 
-.content {
-  display: flex;
+.search-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #f5f2de;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+mat-divider {
   width: 100%;
-  margin-bottom: 3rem;
-}
-
-.content h1 {
-  margin-top: 1.75rem;
-}
-
-.content p {
-  margin-top: 1.5rem;
-}
-
-@media screen and (max-width: 650px) {
-  .content {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .divider {
-    height: 1px;
-    width: 100%;
-    background: var(--red-to-pink-to-purple-horizontal-gradient);
-  }
+  min-height: 5px;
 }
 
 .list {
-  gap: 1rem;
-  list-style: none;
-  display: flex;
-  height: 100vh;
-  overflow: scroll;
-  flex-direction: column;
-
   .list-item {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 18px;
+    color: #000;
     cursor: pointer;
-
-    span {
-      user-select: none;
-      color: black;
-      font-size: 1em;
-      font-weight: 500;
-    }
+    user-select: none;
   }
 }
-
-
-
-@media only screen and (max-width: 480px) and (min-width: 320px) {
-  .list {
-    flex-direction: row;
-    padding: 0;
-    height: 50px;
-  }
-}
-
-html,
-body {
-  height: 100%;
-}
-
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-}
-
 
 .tabs-side {
   gap: 1rem;

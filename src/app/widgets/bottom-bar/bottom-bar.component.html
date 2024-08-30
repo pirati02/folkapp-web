@@ -1,0 +1,10 @@
+<div class="d-flex flex-row position-sticky items">
+    <ng-container *ngFor="let item of items">
+        <div class="item d-flex flex-column align-items-center place-self-center" 
+            [ngClass]="{'is-selected': item.isSelected}"
+            (click)="selectItem(item)">
+            <mat-icon>{{item.icon}}</mat-icon>
+            <span>{{item.title}}</span>
+        </div>
+    </ng-container>
+</div>

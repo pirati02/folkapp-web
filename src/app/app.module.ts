@@ -9,6 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { BottomBarComponent } from "./widgets/bottom-bar/bottom-bar.component";
+import { MediaPlayerComponent } from "./widgets/media-player/media-player.component";
 
 
 @NgModule({
@@ -17,7 +19,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     ],
     declarations: [
         ArtistsComponent,
-        ArtistComponent
+        ArtistComponent,
+        BottomBarComponent,
+        MediaPlayerComponent
     ],
     imports: [
         CommonModule,

@@ -3,7 +3,7 @@
     <router-outlet></router-outlet>
   </div>
   <div class="player-container">
-    <audio [src]="mediaController.selectedSong?.path" autoplay controls>
+    <audio [src]="mediaController.selectedSong?.path" autoplay controls style="display: none;">
       <source *ngFor="let song of mediaController.playList" [src]="song.path" type="audio/mpeg">
     </audio>
   </div>
