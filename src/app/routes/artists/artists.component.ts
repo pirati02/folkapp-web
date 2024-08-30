@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ArtistsService } from "../../services/artists.service";
 import { tap } from "rxjs";
 import { Artist } from "../../models/artist";
-import { ArtistType } from "../../models/artist-type";
+import { ArtistType } from "../../models/artist.type";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BottomBarItem } from "../../widgets/bottom-bar/bottom-bar.component";
  
@@ -18,14 +18,16 @@ export class ArtistsComponent implements OnInit {
             icon: 'group',
             title: 'ანსამბლები',
             link: '/artists/2',
-            isSelected: true
+            isSelected: true,
+            isVisible: true
         },
         <BottomBarItem>{
             id: 1,
             icon: 'system_update_alt',
             title: 'ძველი ჩანაწერები',
             link: '/artists/1',
-            isSelected: false
+            isSelected: false,
+            isVisible: true
         }
     ]
 

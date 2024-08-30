@@ -4,6 +4,7 @@ export interface BottomBarItem{
     icon: string,
     title: string,
     link: string,
+    isVisible: boolean;
     id: number,
     isSelected: boolean
 };

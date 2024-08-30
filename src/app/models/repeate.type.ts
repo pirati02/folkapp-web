@@ -1,0 +1,1 @@
+export type RepeatType = 'repeat' | 'repeat_one' | 'repeat_on';

@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { MediaController } from "../../services/media.controller";
+import { RepeatType } from "../../models/repeate.type";
 
 @Component({
     selector: 'app-media-player',
@@ -7,7 +8,25 @@ import { MediaController } from "../../services/media.controller";
     styleUrls: ['./media-player.component.scss']
 })
 export class MediaPlayerComponent {
-    constructor(private mediaPlayerController: MediaController){
-        
+
+    repeatType?: RepeatType;
+    
+    constructor(
+        public mediaController: MediaController
+    ){
+        this.repeatType = mediaController.getRepeatType();
+    }
+
+    playOrPause() {
+        if(this.mediaController.isPlaying){
+            this.mediaController.pause();
+            return;
+        }
+
+        this.mediaController.resume();
+    }
+
+    changeRepeateType() {
+        this.repeatType = this.mediaController.changeRepeateType()
     }
 }

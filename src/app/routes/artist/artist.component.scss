@@ -1,32 +1,8 @@
-@import '../../../variables.scss';
-
-.close-container {
-    width: 100%;
+.selected-song { 
+    background-color: beige;
 }
 
-.left-side {
-    min-width: 30%;
-}
-
-.right-side {
-    min-width: 70%;
-}
-
-.selected-song {
-    background-color: $choco;
-    color: white !important;
-}
-
-.songs {
-    width: 100%;
-    min-height: 100vh;
-}
-
-
-
-@media only screen and (max-width: 480px) and (min-width: 320px) {
-    .songs-list {
-        flex-direction: column;
-        height: 100vh !important;
-    }
+.close-button {
+    background: none;
+    border: none;
 }

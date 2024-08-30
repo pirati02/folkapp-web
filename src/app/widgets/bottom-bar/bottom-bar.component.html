@@ -2,6 +2,7 @@
     <ng-container *ngFor="let item of items">
         <div class="item d-flex flex-column align-items-center place-self-center" 
             [ngClass]="{'is-selected': item.isSelected}"
+            *ngIf="item.isVisible"
             (click)="selectItem(item)">
             <mat-icon>{{item.icon}}</mat-icon>
             <span>{{item.title}}</span>
