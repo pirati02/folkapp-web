@@ -1,7 +1,6 @@
 .media-player {
   background-color: #a57e3b;
   padding: 15px;
-  height: 55px;
   position: sticky;
   color: #fff;
   font-size: 18px;
@@ -65,4 +64,17 @@
   .centered-icons {
     
   }
+}
+
+.action-button {
+  background: none; 
+  border: none;
+  color: white;
+}
+
+
+.action-button:disabled {
+  background: none; 
+  border: none;
+  color: rgb(223, 223, 223);
 }

@@ -36,10 +36,15 @@
   position: sticky;
 }
 
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
 body {
   margin: 0;
-  font-family: 'Arial', sans-serif;
-  background-color: #fff;
+  height: 100%;
+  overflow: auto;
 }
 
 .header {
@@ -47,7 +52,7 @@ body {
   background-color: #f5f2de;
   padding: 10px;
   text-align: center;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   color: #000;
 }
@@ -126,9 +131,7 @@ mat-divider {
 
 .list-scroll-behavior {
   overflow: scroll;
-  height: fit-content;
   width: 100%;
-  height: calc(100vh / 1.32);
 }
 
 ::ng-deep {
@@ -141,4 +144,15 @@ mat-divider {
   .mat-mdc-button-base {
     color: $choco;
   }
+}
+
+.content {
+  height: 100%;
+}
+
+.tab-list-footer-page {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 6% 74% 10%;
+  overflow: hidden;
 }

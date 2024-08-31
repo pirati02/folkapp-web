@@ -91,10 +91,11 @@ export class ArtistComponent {
         response.pipe(
             map(items => {
                 this.chants = items.chants;
+                this.bottomBarItems[1].isVisible = this.chants.length > 0;
                 if(this.songs.length  === 0){
                     this.songType = 2;
+                    this.bottomBarItems[1].isSelected = this.chants.length > 0;
                 }
-                this.bottomBarItems[1].isVisible = this.chants.length > 0;
                 if(!this.selectedSong){
                     return;
                 }

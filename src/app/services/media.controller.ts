@@ -8,6 +8,8 @@ import { Artist } from "../models/artist";
     providedIn: 'root'
 })
 export class MediaController {
+
+    isInitialized = false;
     private repeatKey = '__repeate_key';
     selectedArtist?: Artist;
     selectedSong?: Song;
@@ -57,6 +59,7 @@ export class MediaController {
     }
 
     play(song: Song) {
+        this.isInitialized = true;
         this.selectedSong = song;
         this.currentIndex = this.playList.indexOf(song);
         this.isPlaying = true;

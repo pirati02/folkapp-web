@@ -1,54 +1,59 @@
-<div class="header d-flex">
-    <button class="close-button" (click)="router.navigate(['..'])">
-        <mat-icon>close</mat-icon>
-    </button>
-    <span style="flex-grow: 1;">
-        ანსამბლები
-    </span>
-</div>
+<div class="tab-list-footer-page">
+    <div class="header d-flex">
+        <button class="close-button" (click)="router.navigate(['..'])">
+            <mat-icon>close</mat-icon>
+        </button>
+        <span class="header-title">
+            {{ artist?.name }}
+        </span>
+    </div>
 
-<div class="d-flex flex-column">
-    <div class="d-flex full-width full-height">
-        <div class="loader d-flex align-items-center justify-content-center flex-column" *ngIf="loading">
-            <mat-spinner matSuffix *ngIf="loading" mode="indeterminate" diameter="50" color="red"></mat-spinner>
-            <h4 *ngIf="showEmptyListText">ჩანაწერები ვერ მოიძებნა</h4>
-        </div>
-    
-        <div class="list-scroll-behavior" *ngIf="songType == 1 && songs.length > 0 && !loading">
-            <mat-list class="list songs-list">
-                <mat-list-item *ngFor="let song of songs">
-                    <div class="d-flex flex-column">
-                        <a (click)="selectSong(song)" class="list-item" [ngClass]="{'selected-song': song.isSelected}">
-                            <span style="margin: 0;">
-                                {{ song.name }}
-                            </span>
-                        </a>
-                        <mat-divider></mat-divider>
-                    </div>
-                </mat-list-item>
-            </mat-list>
-        </div>
-    
-        <div class="list-scroll-behavior" *ngIf="songType == 2 && chants.length > 0 && !loading">
-            <mat-list class="list songs-list">
-                <mat-list-item *ngFor="let song of chants">
-                    <div class="d-flex flex-column">
-                        <a (click)="selectSong(song)" class="list-item" [ngClass]="{'selected-song': song.isSelected}">
-                            <span style="margin: 0;">
-                                {{ song.name }}
-                            </span>
-                        </a>
-                        <mat-divider></mat-divider>
-                    </div>
-                </mat-list-item>
-            </mat-list>
+    <div class="d-flex flex-column">
+        <div class="d-flex full-width full-height">
+            <div class="loader d-flex align-items-center justify-content-center flex-column" *ngIf="loading">
+                <mat-spinner matSuffix *ngIf="loading" mode="indeterminate" diameter="50" color="red"></mat-spinner>
+                <h4 *ngIf="showEmptyListText">ჩანაწერები ვერ მოიძებნა</h4>
+            </div>
+
+            <div class="list-scroll-behavior" *ngIf="songType == 1 && songs.length > 0 && !loading">
+                <mat-list class="list songs-list">
+                    <mat-list-item *ngFor="let song of songs">
+                        <div class="d-flex flex-column">
+                            <a (click)="selectSong(song)" class="list-item"
+                                [ngClass]="{'selected-song': song.isSelected}">
+                                <span style="margin: 0;">
+                                    {{ song.name }}
+                                </span>
+                            </a>
+                            <mat-divider></mat-divider>
+                        </div>
+                    </mat-list-item>
+                </mat-list>
+            </div>
+
+            <div class="list-scroll-behavior" *ngIf="songType == 2 && chants.length > 0 && !loading">
+                <mat-list class="list songs-list">
+                    <mat-list-item *ngFor="let song of chants">
+                        <div class="d-flex flex-column">
+                            <a (click)="selectSong(song)" class="list-item"
+                                [ngClass]="{'selected-song': song.isSelected}">
+                                <span style="margin: 0;">
+                                    {{ song.name }}
+                                </span>
+                            </a>
+                            <mat-divider></mat-divider>
+                        </div>
+                    </mat-list-item>
+                </mat-list>
+            </div>
         </div>
     </div>
-</div> 
 
+    <div>
+        <app-media-player>
+        </app-media-player>
 
-<app-media-player>
-</app-media-player>
-
-<app-bottom-bar [items]="bottomBarItems" (itemSelected)="changeSongType($event)">
-</app-bottom-bar>
+        <app-bottom-bar [items]="bottomBarItems" (itemSelected)="changeSongType($event)">
+        </app-bottom-bar>
+    </div>
+</div>

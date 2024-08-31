@@ -1,8 +1,17 @@
-.selected-song { 
+.selected-song {
     color: chocolate;
 }
 
 .close-button {
     background: none;
     border: none;
+}
+
+.header-title {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 50px;
+    white-space: nowrap;
+    max-width: 90%;
 }

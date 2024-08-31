@@ -1,11 +1,19 @@
 <div class="media-player d-flex flex-column" style="gap: 1rem;" *ngIf="!isExpanded">
     <div class="d-flex flex-row" style="gap: 1rem;">
         <span style="flex-grow: 1;">{{mediaController.selectedSong?.name || 'დასაკრავი სია ცარიელია'}}</span>
-        <mat-icon (click)="expand()" *ngIf="false">keyboard_arrow_up</mat-icon>
+        <!-- <button mat-icon-button [disabled]="!mediaController.isInitialized" (click)="expand()">
+            <mat-icon style="cursor: pointer;">keyboard_arrow_up</mat-icon>
+        </button> -->
     </div>
-    <div class="footer-icon d-flex flex-row" style="gap: 1rem;">
-        <mat-icon (click)="playOrPause()" style="flex-grow: 1;">{{ mediaController.isPlaying ? 'pause_arrow' : 'play_arrow' }}</mat-icon>
-        <mat-icon (click)="changeRepeateType()">{{ repeatType }}</mat-icon>
+    
+    <div class="d-flex flex-row" style="gap: 1rem;">
+        <button class="action-button" [disabled]="!mediaController.isInitialized" (click)="playOrPause()">
+            <mat-icon>{{ mediaController.isPlaying ? 'pause_arrow' : 'play_arrow' }}</mat-icon>
+        </button>
+        <div style="flex-grow: 1;"></div>
+        <button class="action-button" [disabled]="!mediaController.isInitialized" (click)="changeRepeateType()">
+            <mat-icon>{{ repeatType }}</mat-icon>
+        </button>
     </div>
 </div>
 
@@ -23,20 +31,19 @@
     </div>
     <div class="controls" style="margin: 0 1rem;">
         <span class="current-time">{{mediaController.timeUpdated$.value}}</span>
-        <input 
-            type="range"    
-            class="seek-bar"
-            [value]="mediaController.positionUpdated$.value.currentPos" 
+        <input type="range" class="seek-bar" [value]="mediaController.positionUpdated$.value.currentPos"
             [max]="mediaController.positionUpdated$.value.maxPos">
         <span class="total-time">{{seconds}}</span>
     </div>
- 
+
     <div class="navigation d-flex" style="margin: 0 1rem;">
         <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="stop()">stop_circle</mat-icon>
-        <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="playOrPause()">{{ mediaController.isPlaying ? 'pause_arrow' : 'play_arrow' }}</mat-icon>
+        <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="playOrPause()">{{
+            mediaController.isPlaying ? 'pause_arrow' : 'play_arrow' }}</mat-icon>
         <mat-icon class="d-flex align-items-center" style="flex-grow: 1;">skip_previous</mat-icon>
         <mat-icon class="d-flex align-items-center" style="flex-grow: 1;">skip_next</mat-icon>
-        <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="changeRepeateType()">{{ repeatType }}</mat-icon>
+        <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="changeRepeateType()">{{ repeatType
+            }}</mat-icon>
         <mat-icon class="d-flex align-items-center">queue_music</mat-icon>
     </div>
 </div>

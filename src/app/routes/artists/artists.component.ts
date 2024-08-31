@@ -56,7 +56,7 @@ export class ArtistsComponent implements OnInit {
 
     loadArtists(): void {
         this.artistsService.artistsByType(this.artistType)
-            .subscribe(data => this.artists = data);
+            .subscribe(data => this.artists = data.sort((a, b) => a.name.localeCompare(b.name)));
     }
 
     selectArtist(artist: Artist): void {
