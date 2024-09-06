@@ -1,4 +1,7 @@
-@import './variables.scss';
+@import "variables";
+@import "fonts";
+
+//bpg_nino_mtavruli_bold
 
 .d-flex {
   display: flex;
@@ -52,7 +55,7 @@ body {
   background-color: #f5f2de;
   padding: 10px;
   text-align: center;
-  font-size: 20px;
+  font-size: 1.2em;
   font-weight: bold;
   color: #000;
 }
@@ -153,6 +156,25 @@ mat-divider {
 .tab-list-footer-page {
   height: 100%;
   display: grid;
-  grid-template-rows: 6% 74% 10%;
+  grid-template-rows: 50px 75vh 90px 40px;
   overflow: hidden;
+}
+
+@media only screen and (max-height: 620px) {
+  .tab-list-footer-page {
+    grid-template-rows: 50px 62.5vh 15vh 10vh;
+  }
+}
+
+
+@media only screen and (max-height: 800px) and (min-height: 620px) {
+  .tab-list-footer-page {
+    grid-template-rows: 50px 68vh 15vh 10vh;
+  }
+}
+
+@media only screen and (min-height: 1000px)  {
+  .tab-list-footer-page {
+    grid-template-rows: 50px 80vh 90px 40px;
+  }
 }

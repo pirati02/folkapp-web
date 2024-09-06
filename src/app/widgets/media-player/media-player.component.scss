@@ -3,7 +3,7 @@
   padding: 15px;
   position: sticky;
   color: #fff;
-  font-size: 18px;
+  font-size: 1.2em;
 }
 
 .media-player-expanded {
@@ -24,7 +24,7 @@
     height: 65%;
     position: relative;
   }
- 
+
   .song-info h2 {
     font-size: 18px;
     margin: 20px 0 5px;
@@ -62,19 +62,19 @@
   }
 
   .centered-icons {
-    
+
   }
 }
 
 .action-button {
-  background: none; 
+  background: none;
   border: none;
   color: white;
 }
 
 
 .action-button:disabled {
-  background: none; 
+  background: none;
   border: none;
   color: rgb(223, 223, 223);
 }
