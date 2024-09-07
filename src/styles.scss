@@ -134,7 +134,7 @@ mat-divider {
 
 .list-scroll-behavior {
   overflow: scroll;
-  width: 100%;
+  max-width: 100vw;
 }
 
 ::ng-deep {
