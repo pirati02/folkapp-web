@@ -3,13 +3,13 @@
 
     <div class="d-flex flex-column">
         <div class="d-flex full-width full-height">
-            <div class="list-scroll-behavior">
+            <div class="list-scroll-behavior"  style="flex-grow: 1;">
                 <mat-list class="list artist-list">
                     <mat-list-item *ngFor="let artist of artists">
                         <div class="d-flex flex-column">
-                            <a (click)="selectArtist(artist)" class="list-item"
+                            <a (click)="selectArtist(artist)" class="list-item artist-item"
                                 [ngClass]="{'selected-artist': artist.isSelected}">
-                                <span style="margin: 0;">
+                                <span>
                                     {{ artist.name }}
                                 </span>
                             </a>

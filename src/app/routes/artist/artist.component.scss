@@ -1,17 +1,24 @@
 .selected-song {
-    color: chocolate;
+  color: chocolate;
 }
 
 .close-button {
-    background: none;
-    border: none;
+  background: none;
+  border: none;
 }
 
 .header-title {
-    flex-grow: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 50px;
-    white-space: nowrap;
-    max-width: 90%;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 50px;
+  white-space: nowrap;
+  max-width: 90%;
+}
+
+.song-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
 }
