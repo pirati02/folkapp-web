@@ -2,6 +2,11 @@
 @import "fonts";
 
 //bpg_nino_mtavruli_bold
+#master_tab_layout ul li {
+  width: 50px;
+  height: 25px;
+}
+
 
 .d-flex {
   display: flex;
@@ -52,7 +57,7 @@ body {
 
 .header {
   user-select: none;
-  background-color: #f5f2de;
+  background-color: $skin;
   padding: 10px;
   text-align: center;
   font-size: 1.2em;
@@ -78,15 +83,6 @@ body {
   height: 24px;
 }
 
-.search-icon {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #f5f2de;
-  padding: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-}
 
 mat-divider {
   width: 100%;
@@ -129,7 +125,7 @@ mat-divider {
 
 .loader {
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
 }
 
 .list-scroll-behavior {
@@ -156,25 +152,25 @@ mat-divider {
 .tab-list-footer-page {
   height: 100%;
   display: grid;
-  grid-template-rows: 50px 75vh 90px 40px;
+  grid-template-rows: 50px 75dvh 90px 40px;
   overflow: hidden;
 }
 
 @media only screen and (max-height: 620px) {
   .tab-list-footer-page {
-    grid-template-rows: 50px 62.5vh 15vh 10vh;
+    grid-template-rows: 50px 62dvh 15dvh 10dvh;
   }
 }
 
 
 @media only screen and (max-height: 800px) and (min-height: 620px) {
   .tab-list-footer-page {
-    grid-template-rows: 50px 65vh 15vh 10vh;
+    grid-template-rows: 50px 65dvh 15dvh 10dvh;
   }
 }
 
 @media only screen and (min-height: 1000px)  {
   .tab-list-footer-page {
-    grid-template-rows: 50px 80vh 90px 40px;
+    grid-template-rows: 50px 80dvh 90px 40px;
   }
 }

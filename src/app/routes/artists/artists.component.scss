@@ -1,7 +1,24 @@
+@import '../../../variables';
+
+.artists-list {
+  position: relative;
+}
 
 .artist-item {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   margin: 0;
+}
+
+.search-icon-container {
+  position: absolute;
+  bottom: 35px;
+  right: 15px;
+  z-index: 111;
+
+
+  .search-icon {
+    background: $skin;
+  }
 }

@@ -59,7 +59,7 @@ export class ArtistComponent {
             tap(newSong => {
                 this.selectedSong = newSong;
 
-                const song = 
+                const song =
                     this.songs.find(item => item.id == newSong!.id) ||
                     this.chants.find(item => item.id == newSong!.id);
                 if(!song) {
@@ -106,10 +106,6 @@ export class ArtistComponent {
                 this.selectSong(song!, false);
             })
         ).subscribe();
-    }
-
-    filterSongs(songType: SongType) {
-        this.songType = songType;
     }
 
     selectSong(song: Song, play: boolean = true) {

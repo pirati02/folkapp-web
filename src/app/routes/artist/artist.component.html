@@ -12,7 +12,7 @@
         <div class="d-flex full-width full-height">
             <div class="loader d-flex align-items-center justify-content-center flex-column" *ngIf="loading">
                 <mat-spinner matSuffix *ngIf="loading" mode="indeterminate" diameter="50" color="red"></mat-spinner>
-                <h4 *ngIf="showEmptyListText">ჩანაწერები ვერ მოიძებნა</h4>
+                <h4 *ngIf="showEmptyListText">სია ცარიელია</h4>
             </div>
 
             <div class="list-scroll-behavior" style="flex-grow: 1;" *ngIf="songType == 1 && songs.length > 0 && !loading">

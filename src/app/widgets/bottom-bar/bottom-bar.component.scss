@@ -1,17 +1,21 @@
 .items {
-    bottom: 0;
-    user-select: none;
-    cursor: pointer;
-    height: 70px;
-    background: white;
+  bottom: 0;
+  user-select: none;
+  cursor: pointer;
+  height: 70px;
+  background: white;
 
-    .item {
-        flex-grow: 1;
-        color: black;
-        font-size: 0.5em;
-    }
+  .item {
+    flex-grow: 1;
+    color: black;
+    font-size: 0.5em;
+  }
 
-    .is-selected {
-        color: chocolate;
-    }
+  .item:active {
+    background: transparent;
+  }
+
+  .is-selected {
+    color: chocolate;
+  }
 }

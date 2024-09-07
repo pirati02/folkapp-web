@@ -1,0 +1,26 @@
+
+.close-button {
+  background: none;
+  border: none;
+}
+
+.header-title {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 50px;
+  white-space: nowrap;
+  max-width: 90%;
+}
+
+.search-input-container {
+  width: 100%;
+
+  :first-child {
+    width: 100%;
+    padding: 6px;
+    margin: 15px 10px;
+    border-color: black;
+    border-width: 1px;
+  }
+}
