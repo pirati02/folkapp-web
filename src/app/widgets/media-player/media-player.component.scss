@@ -6,63 +6,30 @@
   font-size: 1.2em;
 }
 
-.media-player-expanded {
-  gap: 1rem;
-  position: fixed;      /* instead of absolute */
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+}
 
-  height: 100dvh;       /* optional, since top+bottom=0 already forces full height */
+.seek-bar {
   width: 100%;
-  color: #fff;
-  background: #a57e3b;
-  overflow-y: auto;     /* allow scrolling if content overflows */
+  -webkit-appearance: none;
+  appearance: none;
+  height: 5px;
+  background: #9C9C9C;
+  outline: none;
+  border-radius: 5px;
+}
 
-  .disc {
-    background-color: #3B3B3B;
-    border-radius: 50%;
-    margin: 0 auto;
-    height: 65%;
-    position: relative;
-  }
-
-  .song-info h2 {
-    font-size: 18px;
-    margin: 20px 0 5px;
-  }
-
-  .song-info p {
-    font-size: 14px;
-    margin: 0;
-  }
-
-  .controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px 0;
-  }
-
-  .seek-bar {
-    width: 100%;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 5px;
-    background: #9C9C9C;
-    outline: none;
-    border-radius: 5px;
-  }
-
-  .seek-bar::-webkit-slider-thumb {
-    width: 10px;
-    height: 10px;
-    background: white;
-    cursor: pointer;
-    border-radius: 50%;
-    -webkit-appearance: none;
-  }
+.seek-bar::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  background: white;
+  cursor: pointer;
+  border-radius: 50%;
+  -webkit-appearance: none;
 }
 
 .action-button {

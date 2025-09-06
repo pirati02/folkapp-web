@@ -56,7 +56,33 @@ export class MediaPlayerComponent {
             this.isExpanded = true;
         }
     }
+
     playNext() {
-        
+        const currentIndex = this.mediaController.playList.indexOf(this.mediaController.selectedSong!);
+        if(currentIndex > -1) { 
+            const song = this.mediaController.playList[currentIndex + 1];
+            if(song) {
+                this.mediaController.play(song);
+                this.mediaController.selectedSongChanged$.next(song);
+            }
+        }
     }
+
+    playPrevious() {
+        const currentIndex = this.mediaController.playList.indexOf(this.mediaController.selectedSong!);
+        if(currentIndex > -1) { 
+            const song = this.mediaController.playList[currentIndex - 1];
+            if(song) {
+                this.mediaController.play(song);
+                this.mediaController.selectedSongChanged$.next(song);
+            }
+        }
+    }
+
+    rewind(event: Event) {
+        const input = event.target as HTMLInputElement;
+        const newPosition = Number(input.value);
+        this.mediaController.seekTo(newPosition);
+    }
+
 }
