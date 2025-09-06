@@ -9,15 +9,13 @@
 .media-player-expanded {
   gap: 1rem;
   position: fixed;      /* instead of absolute */
-  top: 3rem;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
 
   height: 100dvh;       /* optional, since top+bottom=0 already forces full height */
   width: 100%;
-
-  z-index: 2000;        /* higher than bottom bar */
   color: #fff;
   background: #a57e3b;
   overflow-y: auto;     /* allow scrolling if content overflows */

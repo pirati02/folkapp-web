@@ -4,8 +4,8 @@
             [ngClass]="{'is-selected': item.isSelected}"
             *ngIf="item.isVisible"
             (click)="selectItem(item)">
-            <mat-icon>{{item.icon}}</mat-icon>
             <span>{{item.title}}</span>
+            <mat-icon>{{item.icon}}</mat-icon>
         </div>
     </ng-container>
 </div>

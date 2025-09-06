@@ -2,17 +2,21 @@
 @import '../../../styles';
 
 :host {
-  display: block;     /* so the host can size itself in the grid */
-  grid-row: 4;        /* belt-and-suspenders in case parent selector misses */
-  z-index: 10;        /* stay above content/player */
+  display: block;
+  /* so the host can size itself in the grid */
+  grid-row: 4;
+  /* belt-and-suspenders in case parent selector misses */
+  z-index: 10;
+  /* stay above content/player */
 }
- 
+
 .items {
   height: $bottom-bar-height;
   display: flex;
   align-items: center;
   background: #fff;
-  padding-bottom: env(safe-area-inset-bottom); /* iOS home indicator */
+  padding-bottom: env(safe-area-inset-bottom);
+  /* iOS home indicator */
 
   .item {
     flex-grow: 1;
@@ -20,6 +24,23 @@
     font-size: 0.5em;
   }
 
-  .item:active { background: transparent; }
-  .is-selected { color: chocolate; }
+  .item mat-icon {
+    color: inherit;
+    /* or a specific color like #fff */
+    font-family: 'Material Icons' !important;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    /* adjust as needed */
+    line-height: 1;
+    display: inline-block;
+  }
+
+  .item:active {
+    background: transparent;
+  }
+
+  .is-selected {
+    color: chocolate;
+  }
 }
