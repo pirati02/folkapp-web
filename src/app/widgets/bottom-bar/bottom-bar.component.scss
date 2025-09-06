@@ -1,9 +1,18 @@
+@import '../../../variables';
+@import '../../../styles';
+
+:host {
+  display: block;     /* so the host can size itself in the grid */
+  grid-row: 4;        /* belt-and-suspenders in case parent selector misses */
+  z-index: 10;        /* stay above content/player */
+}
+ 
 .items {
-  bottom: 0;
-  user-select: none;
-  cursor: pointer;
-  height: 70px;
-  background: white;
+  height: $bottom-bar-height;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding-bottom: env(safe-area-inset-bottom); /* iOS home indicator */
 
   .item {
     flex-grow: 1;
@@ -11,11 +20,6 @@
     font-size: 0.5em;
   }
 
-  .item:active {
-    background: transparent;
-  }
-
-  .is-selected {
-    color: chocolate;
-  }
+  .item:active { background: transparent; }
+  .is-selected { color: chocolate; }
 }

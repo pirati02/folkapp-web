@@ -1,5 +1,5 @@
 <div class="tab-list-footer-page">
-    <div class="header d-flex">
+   <div class="header d-flex">
         <button class="close-button" (click)="router.navigate(['..'])">
             <mat-icon>close</mat-icon>
         </button>
@@ -8,6 +8,8 @@
         </span>
     </div>
 
+  <div class="artists-list d-flex flex-column position-relative" *ngIf="!loading">
+    
     <div class="d-flex flex-column">
         <div class="d-flex full-width full-height">
             <div class="loader d-flex align-items-center justify-content-center flex-column" *ngIf="loading">
@@ -48,10 +50,10 @@
             </div>
         </div>
     </div>
+  </div>
 
-  <app-media-player>
-  </app-media-player>
-
-  <app-bottom-bar [items]="bottomBarItems" (itemSelected)="changeSongType($event)">
-  </app-bottom-bar>
+  <!-- Spinner row -->
+  <div class="spinner-row d-flex justify-content-center align-items-center" *ngIf="loading">
+    <mat-progress-spinner mode="indeterminate" color="accent" [strokeWidth]="7" [diameter]="40"></mat-progress-spinner>
+  </div>
 </div>

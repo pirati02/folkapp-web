@@ -44,6 +44,10 @@
   position: sticky;
 }
 
+.position-relative {
+  position: relative;
+}
+
 html {
   overflow: hidden;
   height: 100%;
@@ -63,6 +67,9 @@ body {
   font-size: 1.2em;
   font-weight: bold;
   color: #000;
+  position: sticky;
+  top: 0;
+  z-index: 10000;
 }
 
 .footer button {
@@ -148,29 +155,13 @@ mat-divider {
 .content {
   height: 100%;
 }
-
+ 
 .tab-list-footer-page {
-  height: 100%;
+  min-height: 100dvh;
   display: grid;
-  grid-template-rows: 50px 75dvh 90px 40px;
-  overflow: hidden;
+  grid-template-rows: 50px 1fr auto 70px; // header, list/spinner, player, bottom bar
 }
 
-@media only screen and (max-height: 620px) {
-  .tab-list-footer-page {
-    grid-template-rows: 50px 62dvh 15dvh 10dvh;
-  }
-}
-
-
-@media only screen and (max-height: 800px) and (min-height: 620px) {
-  .tab-list-footer-page {
-    grid-template-rows: 50px 65dvh 15dvh 10dvh;
-  }
-}
-
-@media only screen and (min-height: 1000px)  {
-  .tab-list-footer-page {
-    grid-template-rows: 50px 80dvh 90px 40px;
-  }
+.spinner-row {
+  grid-row: 2; /* replaces list when loading */
 }

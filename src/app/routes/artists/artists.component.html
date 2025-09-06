@@ -1,34 +1,30 @@
 <div class="tab-list-footer-page">
   <div class="header">ანსამბლები</div>
 
-  <div class="artists-list d-flex flex-column">
-    <div class="d-flex full-width full-height">
-      <div class="list-scroll-behavior" style="flex-grow: 1;">
+  <div class="artists-list d-flex flex-column position-relative" *ngIf="!loading">
+    <div class="list-scroll-behavior" style="flex-grow: 1;">
         <mat-list class="list">
           <mat-list-item *ngFor="let artist of artists">
             <div class="d-flex flex-column">
               <a (click)="selectArtist(artist)" class="list-item artist-item"
-                 [ngClass]="{'selected-artist': artist.isSelected}">
-                                <span>
-                                    {{ artist.name }}
-                                </span>
+                [ngClass]="{'selected-artist': artist.isSelected}">
+                <span>{{ artist.name }}</span>
               </a>
               <mat-divider></mat-divider>
             </div>
           </mat-list-item>
         </mat-list>
       </div>
-    </div>
+  </div>
+
+  <!-- Spinner row -->
+  <div class="spinner-row d-flex justify-content-center align-items-center" *ngIf="loading">
+    <mat-progress-spinner mode="indeterminate" color="accent" [strokeWidth]="7" [diameter]="40"></mat-progress-spinner>
+  </div>
+
     <div class="search-icon-container">
       <a mat-fab class="search-icon" routerLink="/search">
         <mat-icon style="color:chocolate">search</mat-icon>
       </a>
     </div>
-  </div>
-
-  <app-media-player>
-  </app-media-player>
-
-  <app-bottom-bar [items]="bottomBarItems" [selectedItem]="selectedBottomBarItem" (itemSelected)="navigate($event)">
-  </app-bottom-bar>
 </div>

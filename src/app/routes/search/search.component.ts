@@ -1,14 +1,15 @@
-import {Component} from "@angular/core";
-import {Router} from "@angular/router";
-import {SearchService} from "../../services/search.service";
-import {SearchResult} from "../../models/search";
-import {BottomBarItem} from "../../widgets/bottom-bar/bottom-bar.component";
-import {Artist} from "../../models/artist";
-import {Song} from "../../models/song";
-import {SongType} from "../../models/song.type";
-import {MediaController} from "../../services/media.controller";
-import {ArtistsService} from "../../services/artists.service";
-import {catchError, of, tap} from "rxjs";
+import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+import { SearchService } from "../../services/search.service";
+import { SearchResult } from "../../models/search";
+import { BottomBarItem } from "../../widgets/bottom-bar/bottom-bar.component";
+import { Artist } from "../../models/artist";
+import { Song } from "../../models/song";
+import { SongType } from "../../models/song.type";
+import { MediaController } from "../../services/media.controller";
+import { ArtistsService } from "../../services/artists.service";
+import { catchError, of, tap } from "rxjs";
+import { BottomBarService } from "../../services/bottom-bar.service";
 
 enum TabType {
   ARTISTS = 1,
@@ -20,7 +21,7 @@ enum TabType {
   templateUrl: "./search.component.html",
   styleUrls: ["./search.component.scss"]
 })
-export class SearchComponent {
+export class SearchComponent implements OnInit {
   loading: boolean = false;
   bottomBarItems: BottomBarItem[] = [
     <BottomBarItem>{
@@ -48,8 +49,13 @@ export class SearchComponent {
     protected router: Router,
     private mediaController: MediaController,
     private searchService: SearchService,
-    private artistService: ArtistsService
+    private artistService: ArtistsService,
+    private bottomBarService: BottomBarService
   ) {
+  }
+
+  ngOnInit(): void {
+    this.bottomBarService.setItems(this.bottomBarItems);
   }
 
   get showEmptyListText(): boolean {
@@ -77,10 +83,6 @@ export class SearchComponent {
       tap(result => this.mediaController.selectedArtist = result)
     ).subscribe();
     this.mediaController.play(song);
-  }
-
-  changeTabType(item: BottomBarItem) {
-    this.tabType = item.id;
   }
 
   onSearch($event: KeyboardEvent) {

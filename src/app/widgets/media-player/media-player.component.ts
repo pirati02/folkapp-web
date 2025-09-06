@@ -1,11 +1,15 @@
 import { Component } from "@angular/core";
 import { MediaController } from "../../services/media.controller";
 import { RepeatType } from "../../models/repeate.type";
+import { MatIconModule } from "@angular/material/icon";
+import { CommonModule } from "@angular/common";
 
 @Component({
     selector: 'app-media-player',
     templateUrl: './media-player.component.html',
-    styleUrls: ['./media-player.component.scss']
+    styleUrls: ['./media-player.component.scss'],
+    standalone: true,
+    imports: [CommonModule, MatIconModule]
 })
 export class MediaPlayerComponent {
 
@@ -51,5 +55,8 @@ export class MediaPlayerComponent {
         if (this.mediaController.isPlaying) {
             this.isExpanded = true;
         }
+    }
+    playNext() {
+        
     }
 }

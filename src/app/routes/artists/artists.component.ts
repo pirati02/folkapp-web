@@ -1,10 +1,11 @@
-import {Component, OnInit} from "@angular/core";
-import {ArtistsService} from "../../services/artists.service";
-import {tap} from "rxjs";
-import {Artist} from "../../models/artist";
-import {ArtistType} from "../../models/artist.type";
-import {ActivatedRoute, Router} from "@angular/router";
-import {BottomBarItem} from "../../widgets/bottom-bar/bottom-bar.component";
+import { Component, OnInit } from "@angular/core";
+import { ArtistsService } from "../../services/artists.service";
+import { finalize, tap } from "rxjs";
+import { Artist } from "../../models/artist";
+import { ArtistType } from "../../models/artist.type";
+import { ActivatedRoute, Router } from "@angular/router";
+import { BottomBarItem } from "../../widgets/bottom-bar/bottom-bar.component";
+import { BottomBarService } from "../../services/bottom-bar.service";
 
 @Component({
   selector: 'app-artists',
@@ -12,6 +13,7 @@ import {BottomBarItem} from "../../widgets/bottom-bar/bottom-bar.component";
   styleUrls: ['./artists.component.scss']
 })
 export class ArtistsComponent implements OnInit {
+  loading: boolean = false;
   bottomBarItems: BottomBarItem[] = [
     <BottomBarItem>{
       id: 2,
@@ -38,7 +40,8 @@ export class ArtistsComponent implements OnInit {
   constructor(
     private artistsService: ArtistsService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private bottomBarService: BottomBarService
   ) {
     this.route.params.pipe(tap(items => {
       this.artistType = items["id"] || ArtistType.ARTIST;
@@ -52,11 +55,20 @@ export class ArtistsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadArtists();
+    this.bottomBarService.setItems(this.bottomBarItems);
+    this.bottomBarService.selectItem$.subscribe(item => {
+      this.navigate(item);
+    });
   }
 
   loadArtists(): void {
+    this.loading = true;
     this.artistsService.artistsByType(this.artistType)
-      .subscribe(data => this.artists = data.sort((a, b) => a.name.localeCompare(b.name)));
+      .pipe(
+        tap(data => this.artists = data.sort((a, b) => a.name.localeCompare(b.name))),
+        finalize(() => this.loading = false)
+      )
+      .subscribe();
   }
 
   selectArtist(artist: Artist): void {
@@ -68,6 +80,7 @@ export class ArtistsComponent implements OnInit {
   }
 
   navigate(bottomBarItem: BottomBarItem) {
-    this.router.navigate([bottomBarItem.link]);
+    if(bottomBarItem?.link)
+      this.router.navigate([bottomBarItem.link]);
   }
 }

@@ -1,7 +1,8 @@
 
 .player-container {
     position: fixed;
-    bottom: 2rem;
+    bottom: 0;
+    width: 100%;
 
     audio {
         width: calc(100vw / 2);
@@ -10,8 +11,7 @@
 
 @media only screen and (max-width: 480px) and (min-width: 320px)  {
     
-    .player-container { 
-        bottom: 7rem;
+    .player-container {
 
         audio {
             width: 90vw;

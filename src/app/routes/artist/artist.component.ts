@@ -1,6 +1,6 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { Artist } from "../../models/artist";
-import { map, skip, tap } from "rxjs";
+import { finalize, map, merge, mergeMap, skip, tap } from "rxjs";
 import { Song } from "../../models/song";
 import { SongsService } from "../../services/songs.service";
 import { SongType } from "../../models/song.type";
@@ -8,13 +8,14 @@ import { MediaController } from "../../services/media.controller";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ArtistsService } from "../../services/artists.service";
 import { BottomBarItem } from "../../widgets/bottom-bar/bottom-bar.component";
+import { BottomBarService } from "../../services/bottom-bar.service";
 
 @Component({
     selector: 'app-artist',
     templateUrl: './artist.component.html',
     styleUrls: ['./artist.component.scss']
 })
-export class ArtistComponent {
+export class ArtistComponent implements OnInit {
 
     loading = true;
     artist?: Artist;
@@ -43,18 +44,23 @@ export class ArtistComponent {
         private artistService: ArtistsService,
         private songService: SongsService,
         private route: ActivatedRoute,
-        private mediaController: MediaController
+        private mediaController: MediaController,
+        private bottomBarService: BottomBarService
     ) {
+
+    }
+
+    ngOnInit(): void {
         this.route.params.pipe(tap(items => {
             const artistId = items["id"] as string;
             if (artistId) {
                 this.loadAndSelectArtist(artistId);
-                this.loadSongs();
+                this.loadSongs().subscribe();
             }
         })).subscribe();
 
-        this.selectedSong = mediaController.selectedSong;
-        mediaController.selectedSongChanged$.pipe(
+        this.selectedSong = this.mediaController.selectedSong;
+        this.mediaController.selectedSongChanged$.pipe(
             skip(1),
             tap(newSong => {
                 this.selectedSong = newSong;
@@ -62,50 +68,40 @@ export class ArtistComponent {
                 const song =
                     this.songs.find(item => item.id == newSong!.id) ||
                     this.chants.find(item => item.id == newSong!.id);
-                if(!song) {
-                   return;
+                if (!song) {
+                    return;
                 }
                 this.selectSong(song!, false);
             })
         ).subscribe();
+        this.bottomBarService.setItems(this.bottomBarItems);
     }
 
     loadSongs() {
-        const response = this.songService.songsByArtistId(this.artist?.id!);
-        response.pipe(
-            map(items => {
-                this.songs = items.songs;
-                this.bottomBarItems[0].isVisible = this.songs.length > 0;
-                this.loading = false;
-                if(!this.selectedSong){
-                    return;
-                }
-                const song = this.songs.find(item => item.id == this.selectedSong!.id);
-                if(!song) {
-                   return;
-                }
-                this.selectSong(song!, false);
-            })
-        ).subscribe();
+        return this.songService.songsByArtistId(this.artist?.id!)
+            .pipe(
+                map(items => {
+                    this.songs = items.songs;
+                    this.chants = items.chants;
 
-        response.pipe(
-            map(items => {
-                this.chants = items.chants;
-                this.bottomBarItems[1].isVisible = this.chants.length > 0;
-                if(this.songs.length  === 0){
-                    this.songType = 2;
-                    this.bottomBarItems[1].isSelected = this.chants.length > 0;
-                }
-                if(!this.selectedSong){
-                    return;
-                }
-                const song = this.chants.find(item => item.id == this.selectedSong!.id);
-                if(!song) {
-                   return;
-                }
-                this.selectSong(song!, false);
-            })
-        ).subscribe();
+                    this.bottomBarItems[1].isVisible = this.chants.length > 0;
+                    this.bottomBarItems[0].isVisible = this.songs.length > 0;
+                    if (this.songs.length === 0) {
+                        this.songType = 2;
+                        this.bottomBarItems[1].isSelected = this.chants.length > 0;
+                    }
+
+                    if (!this.selectedSong) {
+                        return;
+                    }
+                    const song = [...this.songs, ...this.chants].find(item => item.id == this.selectedSong!.id);
+                    if (!song) {
+                        return;
+                    }
+                    this.selectSong(song!, false);
+                }),
+                finalize(() => this.loading = false)
+            );
     }
 
     selectSong(song: Song, play: boolean = true) {
@@ -117,7 +113,7 @@ export class ArtistComponent {
         song!.isSelected = true;
         this.selectedSong = song!;
 
-        if(play) {
+        if (play) {
             const playList = this.songType == SongType.Song ? this.songs : this.chants;
             this.mediaController.playList = playList;
             this.mediaController.selectedArtist = this.artist;
@@ -127,10 +123,13 @@ export class ArtistComponent {
 
     private loadAndSelectArtist(id: string): void {
         this.artistService.artistById(id)
-            .subscribe(data => {
-                this.artist = data;
-                this.loadSongs();
-            })
+            .pipe(
+                mergeMap((artist) => {
+                    this.artist = artist;
+                    return this.loadSongs();
+                })
+            )
+            .subscribe()
     }
 
     get showEmptyListText(): boolean {

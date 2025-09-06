@@ -1,6 +1,9 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { MatIconModule } from "@angular/material/icon";
+import { BottomBarService } from "../../services/bottom-bar.service";
 
-export interface BottomBarItem{
+export interface BottomBarItem {
     icon: string,
     title: string,
     link: string,
@@ -12,18 +15,31 @@ export interface BottomBarItem{
 @Component({
     selector: 'app-bottom-bar',
     templateUrl: './bottom-bar.component.html',
-    styleUrls: ['./bottom-bar.component.scss']
+    styleUrls: ['./bottom-bar.component.scss'],
+    standalone: true,
+    imports: [CommonModule, MatIconModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BottomBarComponent {
-    @Input() items: BottomBarItem[] = [];
-    @Input() set selectedItem(val: BottomBarItem) {
-        this.selectItem(val);
+export class BottomBarComponent implements OnInit {
+    items: BottomBarItem[] = [];
+
+    constructor(
+        private service: BottomBarService,
+        private cdr: ChangeDetectorRef
+    ) {
+
     }
-    @Output() itemSelected: EventEmitter<BottomBarItem> = new EventEmitter();
-    
+
+    ngOnInit(): void {
+        this.service.items$.subscribe(items => {
+            this.items = items;
+            this.cdr.detectChanges();
+        })
+    }
+
     selectItem(item: BottomBarItem) {
-        this.items.forEach(item => item.isSelected = false);
-        item!.isSelected = true;
-        this.itemSelected.next(item);
+        this.items.forEach(it => it.isSelected = (item.id === it.id));
+        this.service.selectItem(item);
+        this.cdr.detectChanges();
     }
 }

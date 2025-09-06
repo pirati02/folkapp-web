@@ -1,7 +1,15 @@
-<div class="content">
-  <router-outlet></router-outlet>
-</div>
-<div class="player-container">
-  <audio id="audio-element" [src]="mediaController.selectedSong?.path" autoplay controls style="display: none;">
-  </audio>
+<div class="d-flex flex-column">
+  <div class="content" [ngStyle]="{'margin-bottom':playerContainer.offsetHeight+'px'}">
+    <router-outlet></router-outlet>
+  </div>
+  <div class="player-container" #playerContainer>
+    <app-media-player>
+    </app-media-player>
+
+    <audio id="audio-element" [src]="mediaController.selectedSong?.path" autoplay controls style="display: none;">
+    </audio>
+
+    <app-bottom-bar>
+    </app-bottom-bar>
+  </div>
 </div>
