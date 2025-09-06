@@ -4,8 +4,8 @@
       <mat-icon>close</mat-icon>
     </button>
     <span class="header-title">
-            ძიება
-        </span>
+      ძიება
+    </span>
   </div>
 
   <div class="d-flex flex-column">
@@ -19,15 +19,16 @@
         <h4 *ngIf="showEmptyListText">ჩანაწერები ვერ მოიძებნა</h4>
       </div>
 
-      <div class="list-scroll-behavior" style="flex-grow: 1;"  *ngIf="tabType == 1 && searchResult.artists.length > 0 && !loading">
+      <div class="list-scroll-behavior" style="flex-grow: 1;"
+        *ngIf="tabType == 1 && searchResult.artists.length > 0 && !loading">
         <mat-list class="list songs-list">
           <mat-list-item *ngFor="let artist of searchResult.artists">
             <div class="d-flex flex-column">
               <a (click)="selectArtist(artist)" class="list-item song-item"
-                 [ngClass]="{'selected-result': artist.isSelected}">
-                                <span>
-                                    {{ artist.name }}
-                                </span>
+                [ngClass]="{'selected-result': artist.isSelected}">
+                <span>
+                  {{ artist.name }}
+                </span>
               </a>
               <mat-divider></mat-divider>
             </div>
@@ -35,15 +36,16 @@
         </mat-list>
       </div>
 
-      <div class="list-scroll-behavior"  style="flex-grow: 1;"  *ngIf="tabType == 2 && searchResult.songs.length > 0 && !loading">
+      <div class="list-scroll-behavior" style="flex-grow: 1;"
+        *ngIf="tabType == 2 && searchResult.songs.length > 0 && !loading">
         <mat-list class="list songs-list">
           <mat-list-item *ngFor="let song of searchResult.songs">
             <div class="d-flex flex-column">
               <a (click)="selectSong(song)" class="list-item song-item"
-                 [ngClass]="{'selected-result': song.isSelected}">
-                                <span>
-                                    {{ song.name }}
-                                </span>
+                [ngClass]="{'selected-result': song.isSelected}">
+                <span>
+                  {{ song.name }}
+                </span>
               </a>
               <mat-divider></mat-divider>
             </div>

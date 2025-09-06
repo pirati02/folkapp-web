@@ -5,10 +5,9 @@ import { SearchResult } from "../../models/search";
 import { BottomBarItem } from "../../widgets/bottom-bar/bottom-bar.component";
 import { Artist } from "../../models/artist";
 import { Song } from "../../models/song";
-import { SongType } from "../../models/song.type";
 import { MediaController } from "../../services/media.controller";
 import { ArtistsService } from "../../services/artists.service";
-import { catchError, of, tap } from "rxjs";
+import { finalize, tap } from "rxjs";
 import { BottomBarService } from "../../services/bottom-bar.service";
 
 enum TabType {
@@ -56,6 +55,9 @@ export class SearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.bottomBarService.setItems(this.bottomBarItems);
+    this.bottomBarService.selectItem$.subscribe(item => {
+        this.tabType = item.id;
+    });
   }
 
   get showEmptyListText(): boolean {
@@ -94,14 +96,9 @@ export class SearchComponent implements OnInit {
     this.loading = true;
     this.searchService.search(value)
       .pipe(
-        tap(result => {
-          this.loading = false;
-          this.searchResult = result
-        }),
-        catchError(_ => {
-          this.loading = false;
-          return of()
-        }))
+        tap(result => this.searchResult = result),
+        finalize(() => this.loading = false)
+      )
       .subscribe();
   }
 }
