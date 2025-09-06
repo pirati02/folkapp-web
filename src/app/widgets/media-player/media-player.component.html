@@ -1,4 +1,4 @@
-<div class="media-player d-flex flex-column" style="gap: 1rem;" *ngIf="!isExpanded">
+<div class="media-player d-flex flex-column" style="gap: 1rem;" *ngIf="mediaController.isInitialized">
   <div class="d-flex flex-row" style="gap: 1rem;">
     <span style="flex-grow: 1;">
       {{ mediaController.selectedSong?.name || 'დასაკრავი სია ცარიელია' }}
