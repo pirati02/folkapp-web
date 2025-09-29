@@ -9,6 +9,8 @@ import {Artist} from '../models/artist';
 export class MediaController {
   private selectedSongKey = 'selectedSong';
   private selectedPlaylistKey = 'selectedPlaylistKey';
+  private repeatTypeKey = 'repeatType';
+
   private audio = new Audio();
 
   /** playback state */
@@ -28,6 +30,10 @@ export class MediaController {
     maxPos: 0
   });
 
+  get currentIndex(): number {
+    return this.playList.findIndex(item => item.id == this.selectedSong?.id) || -1;
+  }
+
   constructor() {
     this.audio.onplay = () => {
       this.isPlaying = true;
@@ -46,6 +52,7 @@ export class MediaController {
     this.audio.play();
     this.isInitialized = true;
     this.selectedSongChanged$.next(song);
+
     localStorage.setItem(this.selectedSongKey, JSON.stringify(song));
     localStorage.setItem(this.selectedPlaylistKey, JSON.stringify(this.playList));
   }
@@ -87,7 +94,30 @@ export class MediaController {
     else if (this.repeatType === 'repeat_one') this.repeatType = 'repeat_on';
     else this.repeatType = 'repeat';
 
+    this.cacheRepeatType(this.repeatType);
+
     return this.repeatType;
+  }
+
+  unveilLastSong() {
+    const songString = localStorage.getItem(this.selectedSongKey);
+    if (songString) {
+      const song = JSON.parse(songString) as Song;
+      this.selectedSong = song;
+      this.playList = JSON.parse(localStorage.getItem(this.selectedPlaylistKey)!) as Song[];
+      this.play(song);
+      return true;
+    }
+
+    return false;
+  }
+
+  loadRepeatMode() {
+    this.repeatType = localStorage.getItem(this.repeatTypeKey) as RepeatType || "repeat";
+  }
+
+  cacheRepeatType(repeatType: RepeatType) {
+    localStorage.setItem(this.repeatTypeKey, repeatType);
   }
 
   private handleEnded() {
@@ -100,17 +130,5 @@ export class MediaController {
     } else {
       this.stop();
     }
-  }
-
-  unveilLastSong() {
-    const songString = localStorage.getItem(this.selectedSongKey);
-    if (songString) {
-      const song = JSON.parse(songString) as Song;
-      this.playList = JSON.parse(localStorage.getItem(this.selectedPlaylistKey)!) as Song[];
-      this.play(song);
-      return true;
-    }
-
-    return false;
   }
 }

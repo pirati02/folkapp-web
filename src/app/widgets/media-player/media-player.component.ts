@@ -13,19 +13,17 @@ import {CommonModule} from "@angular/common";
 })
 export class MediaPlayerComponent implements OnInit {
 
-  private repeatTypeKey = 'repeatType';
-
   repeatType?: RepeatType;
 
   constructor(
     public mediaController: MediaController
   ) {
-    this.repeatType = mediaController.getRepeatType();
   }
 
   ngOnInit() {
-    this.repeatType = localStorage.getItem(this.repeatTypeKey) as RepeatType || "repeat";
+    this.mediaController.loadRepeatMode();
     this.mediaController.unveilLastSong();
+    this.repeatType = this.mediaController.getRepeatType();
   }
 
   playOrPause() {
@@ -39,11 +37,10 @@ export class MediaPlayerComponent implements OnInit {
 
   changeRepeatType() {
     this.repeatType = this.mediaController.changeRepeatType();
-    localStorage.setItem(this.repeatTypeKey, this.repeatType);
   }
 
   playNext() {
-    const currentIndex = this.mediaController.playList.indexOf(this.mediaController.selectedSong!);
+    const currentIndex = this.mediaController.currentIndex;
     if (currentIndex > -1) {
       const song = this.mediaController.playList[currentIndex + 1];
       if (song) {
@@ -54,7 +51,7 @@ export class MediaPlayerComponent implements OnInit {
   }
 
   playPrevious() {
-    const currentIndex = this.mediaController.playList.indexOf(this.mediaController.selectedSong!);
+    const currentIndex = this.mediaController.currentIndex;
     if (currentIndex > -1) {
       const song = this.mediaController.playList[currentIndex - 1];
       if (song) {
