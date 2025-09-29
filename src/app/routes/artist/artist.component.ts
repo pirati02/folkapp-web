@@ -1,14 +1,14 @@
-import { Component, OnInit } from "@angular/core";
-import { Artist } from "../../models/artist";
-import { finalize, map, merge, mergeMap, skip, tap } from "rxjs";
-import { Song } from "../../models/song";
-import { SongsService } from "../../services/songs.service";
-import { SongType } from "../../models/song.type";
-import { MediaController } from "../../services/media.controller";
-import { ActivatedRoute, Router } from "@angular/router";
-import { ArtistsService } from "../../services/artists.service";
-import { BottomBarItem } from "../../widgets/bottom-bar/bottom-bar.component";
-import { BottomBarService } from "../../services/bottom-bar.service";
+import {Component, OnInit} from "@angular/core";
+import {Artist} from "../../models/artist";
+import {finalize, map, mergeMap, skip, tap} from "rxjs";
+import {Song} from "../../models/song";
+import {SongsService} from "../../services/songs.service";
+import {SongType} from "../../models/song.type";
+import {MediaController} from "../../services/media.controller";
+import {ActivatedRoute, Router} from "@angular/router";
+import {ArtistsService} from "../../services/artists.service";
+import {BottomBarItem} from "../../widgets/bottom-bar/bottom-bar.component";
+import {BottomBarService} from "../../services/bottom-bar.service";
 
 @Component({
     selector: 'app-artist',
@@ -114,8 +114,7 @@ export class ArtistComponent implements OnInit {
         this.selectedSong = song!;
 
         if (play) {
-            const playList = this.songType == SongType.Song ? this.songs : this.chants;
-            this.mediaController.playList = playList;
+          this.mediaController.playList = this.songType == SongType.Song ? this.songs : this.chants;
             this.mediaController.selectedArtist = this.artist;
             this.mediaController.play(song);
         }
@@ -136,9 +135,5 @@ export class ArtistComponent implements OnInit {
         return !this.loading
             && (this.songType == SongType.Song && this.songs.length == 0)
             || (this.songType == SongType.Chant && this.chants.length == 0)
-    }
-
-    changeSongType(item: BottomBarItem) {
-        this.songType = item.id;
     }
 }

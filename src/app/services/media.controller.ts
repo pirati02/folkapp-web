@@ -1,12 +1,14 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { RepeatType } from '../models/repeate.type';
-import { Song } from '../models/song';
-import { Artist } from '../models/artist';
- 
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {RepeatType} from '../models/repeate.type';
+import {Song} from '../models/song';
+import {Artist} from '../models/artist';
 
-@Injectable({ providedIn: 'root' })
+
+@Injectable({providedIn: 'root'})
 export class MediaController {
+  private selectedSongKey = 'selectedSong';
+  private selectedPlaylistKey = 'selectedPlaylistKey';
   private audio = new Audio();
 
   /** playback state */
@@ -25,20 +27,14 @@ export class MediaController {
     currentPos: 0,
     maxPos: 0
   });
-  timeUpdated$ = new BehaviorSubject<string>('00:00');
 
   constructor() {
-    // Update position as audio plays
-    this.audio.ontimeupdate = () => {
-      const current = this.audio.currentTime;
-      const duration = this.audio.duration || 0;
-
-      this.positionUpdated$.next({ currentPos: current, maxPos: duration });
-      this.timeUpdated$.next(this.formatTime(current));
+    this.audio.onplay = () => {
+      this.isPlaying = true;
     };
-
-    this.audio.onplay = () => { this.isPlaying = true; };
-    this.audio.onpause = () => { this.isPlaying = false; };
+    this.audio.onpause = () => {
+      this.isPlaying = false;
+    };
     this.audio.onended = () => this.handleEnded();
   }
 
@@ -50,10 +46,17 @@ export class MediaController {
     this.audio.play();
     this.isInitialized = true;
     this.selectedSongChanged$.next(song);
+    localStorage.setItem(this.selectedSongKey, JSON.stringify(song));
+    localStorage.setItem(this.selectedPlaylistKey, JSON.stringify(this.playList));
   }
 
-  pause() { this.audio.pause(); }
-  resume() { this.audio.play(); }
+  pause() {
+    this.audio.pause();
+  }
+
+  resume() {
+    this.audio.play();
+  }
 
   stop() {
     this.audio.pause();
@@ -64,18 +67,13 @@ export class MediaController {
   /** user scrubbed the seek bar */
   seekTo(seconds: number) {
     if (this.audio.duration) {
-        this.audio.currentTime = seconds;  // just move the playhead
+      this.audio.currentTime = seconds;  // just move the playhead
     }
 
     this.positionUpdated$.next({
-        currentPos: seconds,
-        maxPos: this.audio.duration || 0
+      currentPos: seconds,
+      maxPos: this.audio.duration || 0
     });
-  }
-
-  /** total duration in seconds */
-  getDuration(): number {
-    return this.audio.duration || 0;
   }
 
   /** repeat logic */
@@ -83,7 +81,7 @@ export class MediaController {
     return this.repeatType;
   }
 
-  changeRepeateType(): RepeatType {
+  changeRepeatType(): RepeatType {
     // cycle through repeat types
     if (this.repeatType === 'repeat') this.repeatType = 'repeat_one';
     else if (this.repeatType === 'repeat_one') this.repeatType = 'repeat_on';
@@ -92,7 +90,6 @@ export class MediaController {
     return this.repeatType;
   }
 
-  /** called when track ends */
   private handleEnded() {
     if (this.repeatType === 'repeat_one' && this.selectedSong) {
       this.play(this.selectedSong);
@@ -105,12 +102,15 @@ export class MediaController {
     }
   }
 
-  private formatTime(seconds: number): string {
-    if (!seconds || isNaN(seconds)) return '00:00';
-    const minutes = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${minutes.toString().padStart(2, '0')}:${secs
-      .toString()
-      .padStart(2, '0')}`;
+  unveilLastSong() {
+    const songString = localStorage.getItem(this.selectedSongKey);
+    if (songString) {
+      const song = JSON.parse(songString) as Song;
+      this.playList = JSON.parse(localStorage.getItem(this.selectedPlaylistKey)!) as Song[];
+      this.play(song);
+      return true;
+    }
+
+    return false;
   }
 }

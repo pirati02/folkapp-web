@@ -1,11 +1,11 @@
-import { Component, OnInit } from "@angular/core";
-import { ArtistsService } from "../../services/artists.service";
-import { finalize, tap } from "rxjs";
-import { Artist } from "../../models/artist";
-import { ArtistType } from "../../models/artist.type";
-import { ActivatedRoute, Router } from "@angular/router";
-import { BottomBarItem } from "../../widgets/bottom-bar/bottom-bar.component";
-import { BottomBarService } from "../../services/bottom-bar.service";
+import {Component, OnInit} from "@angular/core";
+import {ArtistsService} from "../../services/artists.service";
+import {finalize, tap} from "rxjs";
+import {Artist} from "../../models/artist";
+import {ArtistType} from "../../models/artist.type";
+import {ActivatedRoute, Router} from "@angular/router";
+import {BottomBarItem} from "../../widgets/bottom-bar/bottom-bar.component";
+import {BottomBarService} from "../../services/bottom-bar.service";
 
 @Component({
   selector: 'app-artists',
@@ -45,10 +45,9 @@ export class ArtistsComponent implements OnInit {
   ) {
     this.route.params.pipe(tap(items => {
       this.artistType = items["id"] || ArtistType.ARTIST;
-      const item = this.artistType == ArtistType.ARTIST
+      this.selectedBottomBarItem = this.artistType == ArtistType.ARTIST
         ? this.bottomBarItems[0]
         : this.bottomBarItems[1];
-      this.selectedBottomBarItem = item;
       this.loadArtists();
     })).subscribe();
   }
@@ -76,11 +75,11 @@ export class ArtistsComponent implements OnInit {
       .forEach(item => item.isSelected = false);
 
     artist!.isSelected = true;
-    this.router.navigateByUrl('/artist/' + artist.id);
+    this.router.navigateByUrl('/artist/' + artist.id).then();
   }
 
   navigate(bottomBarItem: BottomBarItem) {
     if(bottomBarItem?.link)
-      this.router.navigate([bottomBarItem.link]);
+      this.router.navigate([bottomBarItem.link]).then();
   }
 }

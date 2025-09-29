@@ -72,7 +72,7 @@ export class SearchComponent implements OnInit {
       .forEach(item => item.isSelected = false);
 
     artist!.isSelected = true;
-    this.router.navigateByUrl('/artist/' + artist.id);
+    this.router.navigateByUrl('/artist/' + artist.id).then();
   }
 
   selectSong(song: Song) {
