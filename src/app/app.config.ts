@@ -7,7 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 
 export var baseUrlProvider: ValueProvider = <ValueProvider> {
   provide: 'BASE_URL',
-  useValue: 'http://localhost:5096'
+  useValue: 'https://ammpjt8siw.us-east-1.awsapprunner.com'
 }
 
 export const appConfig: ApplicationConfig = {
