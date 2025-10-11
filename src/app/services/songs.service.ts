@@ -1,30 +1,36 @@
-import { HttpClient } from "@angular/common/http";
-import { Inject, Injectable } from "@angular/core";
-import { map, Observable, tap } from "rxjs";
-import { Song } from "../models/song";
-import { BaseResponse } from "../models/base-response";
+import {HttpClient} from "@angular/common/http";
+import {Inject, Injectable} from "@angular/core";
+import {map, Observable, tap} from "rxjs";
+import {Song} from "../models/song";
+import {BaseResponse} from "../models/base-response";
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class SongsService {
 
-    constructor(
-        @Inject('BASE_URL') private baseUrl: string,
-        private httpClient: HttpClient
-    ){
-        
-    }
+  constructor(
+    @Inject('BASE_URL') private baseUrl: string,
+    private httpClient: HttpClient
+  ) {
 
-    songsByArtistId(id: string): Observable<{ 
-        songs: Song[],
-        chants: Song[]
-    }> {
-        return this.httpClient.get<BaseResponse<{ 
-            songs: Song[],
-            chants: Song[]
-        }>>(this.baseUrl + '/Songs/' + id + '/all').pipe(
-            map(data => data.body)
-        );
-    }
+  }
+
+  songsByArtistId(id: string): Observable<{
+    songs: Song[],
+    chants: Song[]
+  }> {
+    return this.httpClient.get<BaseResponse<{
+      songs: Song[],
+      chants: Song[]
+    }>>(this.baseUrl + '/songs/' + id + '/all').pipe(
+      map(data => data.body)
+    );
+  }
+
+  share(id: string): Observable<string> {
+    return this.httpClient.get<BaseResponse<string>>(this.baseUrl + '/songs/' + id + '/share').pipe(
+      map(data => data.body)
+    );
+  }
 }

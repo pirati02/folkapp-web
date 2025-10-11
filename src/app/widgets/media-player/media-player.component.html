@@ -8,10 +8,11 @@
   <div class="d-flex flex-column" style="gap: 1rem;">
     <div class="d-flex flex-row">
       <button class="action-button" [disabled]="!mediaController.isInitialized" (click)="playOrPause()">
-      <mat-icon>{{ mediaController.isPlaying ? 'pause_arrow' : 'play_arrow' }}</mat-icon>
+        <mat-icon>{{ mediaController.isPlaying ? 'pause_arrow' : 'play_arrow' }}</mat-icon>
       </button>
       <button class="action-button" [disabled]="!mediaController.isInitialized">
-        <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="playPrevious()">skip_previous</mat-icon>
+        <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="playPrevious()">skip_previous
+        </mat-icon>
       </button>
       <button class="action-button" [disabled]="!mediaController.isInitialized">
         <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="playNext()">skip_next</mat-icon>
@@ -20,14 +21,18 @@
       <button class="action-button" [disabled]="!mediaController.isInitialized" (click)="changeRepeatType()">
         <mat-icon>{{ repeatType }}</mat-icon>
       </button>
+      <button class="action-button" [disabled]="!mediaController.isInitialized"
+              [ngStyle]="{'display': this.canShare? '': 'none'}" (click)="share()">
+        <mat-icon>share</mat-icon>
+      </button>
     </div>
 
     <div class="controls" style="margin: 0 1rem;">
       <input type="range"
-            class="seek-bar"
-            [value]="mediaController.positionUpdated$.value.currentPos"
-            [max]="mediaController.positionUpdated$.value.maxPos"
-            (input)="rewind($event)">
+             class="seek-bar"
+             [value]="mediaController.positionUpdated$.value.currentPos"
+             [max]="mediaController.positionUpdated$.value.maxPos"
+             (input)="rewind($event)">
     </div>
   </div>
 </div>

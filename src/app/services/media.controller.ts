@@ -49,7 +49,12 @@ export class MediaController {
     this.selectedSong = song;
     this.audio.src = song.path;
     this.audio.load();
-    this.audio.play();
+    this.audio.play()
+      .then();
+    this.audio.addEventListener('pause', () => {
+      this.pause();
+    });
+
     this.isInitialized = true;
     this.selectedSongChanged$.next(song);
 
