@@ -9,9 +9,11 @@ import {Artist} from '../models/artist';
 export class MediaController {
   private selectedSongKey = 'selectedSong';
   private selectedPlaylistKey = 'selectedPlaylistKey';
+  private selectedIndex = 'selectedIndex';
   private repeatTypeKey = 'repeatType';
 
   private audio = new Audio();
+  private positionTimer?: any;
 
   /** playback state */
   isPlaying = false;
@@ -31,7 +33,11 @@ export class MediaController {
   });
 
   get currentIndex(): number {
-    return this.playList.findIndex(item => item.id == this.selectedSong?.id) || -1;
+    return this.playList.findIndex(item => item.id == this.selectedSong?.id);
+  }
+
+  get playerPosition(): number {
+    return this.audio.currentTime || 0;
   }
 
   constructor() {
@@ -51,15 +57,28 @@ export class MediaController {
     this.audio.load();
     this.audio.play()
       .then();
-    this.audio.addEventListener('pause', () => {
+    this.audio.pause = () => {
       this.pause();
-    });
+    };
+    this.audio.onplay = () => {
+      this.isPlaying = true;
+      this.startPositionUpdates();
+    };
+    this.audio.onpause = () => {
+      this.isPlaying = false;
+      this.stopPositionUpdates();
+    };
+    this.audio.onended = () => {
+      this.stopPositionUpdates();
+      this.handleEnded();
+    };
 
     this.isInitialized = true;
     this.selectedSongChanged$.next(song);
 
     localStorage.setItem(this.selectedSongKey, JSON.stringify(song));
     localStorage.setItem(this.selectedPlaylistKey, JSON.stringify(this.playList));
+    //localStorage.setItem(this.selectedIndex, this.currentIndex);
   }
 
   pause() {
@@ -110,6 +129,7 @@ export class MediaController {
       const song = JSON.parse(songString) as Song;
       this.selectedSong = song;
       this.playList = JSON.parse(localStorage.getItem(this.selectedPlaylistKey)!) as Song[];
+      //this.currentIndex = localStorage.getItem(this.selectedIndex);
       this.play(song);
       return true;
     }
@@ -134,6 +154,22 @@ export class MediaController {
       this.play(next);
     } else {
       this.stop();
+    }
+  }
+  private startPositionUpdates() {
+    this.stopPositionUpdates();
+    this.positionTimer = setInterval(() => {
+      this.positionUpdated$.next({
+        currentPos: this.audio.currentTime,
+        maxPos: this.audio.duration || 0
+      });
+    }, 500); // every half-second
+  }
+
+  private stopPositionUpdates() {
+    if (this.positionTimer) {
+      clearInterval(this.positionTimer);
+      this.positionTimer = undefined;
     }
   }
 }

@@ -34,7 +34,7 @@ export class MediaPlayerComponent implements OnInit {
 
     if ('mediaSession' in navigator) {
       navigator.mediaSession.setActionHandler('play', () => this.mediaController.resume());
-      navigator.mediaSession.setActionHandler('pause', () =>  this.mediaController.pause());
+      navigator.mediaSession.setActionHandler('pause', () => this.mediaController.pause());
       navigator.mediaSession.setActionHandler('previoustrack', () => this.playPrevious());
       navigator.mediaSession.setActionHandler('nexttrack', () => this.playNext());
     }
@@ -65,6 +65,15 @@ export class MediaPlayerComponent implements OnInit {
   }
 
   playPrevious() {
+    if (this.mediaController.playerPosition > 3) {
+      const song = this.mediaController.selectedSong;
+      if (song) {
+        this.mediaController.play(song);
+        this.mediaController.selectedSongChanged$.next(song);
+      }
+      return;
+    }
+
     const currentIndex = this.mediaController.currentIndex;
     if (currentIndex > -1) {
       const song = this.mediaController.playList[currentIndex - 1];
