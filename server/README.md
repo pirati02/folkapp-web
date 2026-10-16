@@ -37,7 +37,7 @@ npm run drive:verify     # checks every song/image in the database exists in Dri
 4. `npm run drive:sync` fills the database from Drive, then `npm run dev` starts the API on port 8080.
    `/health` should report `database` and `storage` as `ok`.
 5. In the repository root, `npm start` serves the web app on http://localhost:4200, already pointed at
-   `http://localhost:8080` (`src/environments/environment.development.ts`).
+   `http://localhost:8080` (`web/environments/environment.development.ts`).
 
 ## How songs are served from Google Drive
 
@@ -105,7 +105,7 @@ songs: it only adds what's new and never deletes.
    are reachable.
 4. If Render gives the services different URLs than `folkapp-api.onrender.com` and
    `folkapp-web.onrender.com` (names are first come, first served), update `apiUrl` in
-   `src/environments/environment.ts` and the API's `CORS_ORIGINS`.
+   `web/environments/environment.ts` and the API's `CORS_ORIGINS`.
 
 Free-plan behaviour to keep in mind: the API sleeps after 15 minutes without traffic, so the first
 request after a quiet period takes up to about a minute. All audio streams through the API, so plays

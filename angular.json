@@ -11,15 +11,15 @@
         }
       },
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "web",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/folkapp-web",
-            "index": "src/index.html",
-            "browser": "src/main.ts",
+            "index": "web/index.html",
+            "browser": "web/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -33,7 +33,7 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/cyan-orange.css",
-              "src/styles.scss"
+              "web/styles.scss"
             ],
             "scripts": []
           },
@@ -59,8 +59,8 @@
               "sourceMap": true,
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.development.ts"
+                  "replace": "web/environments/environment.ts",
+                  "with": "web/environments/environment.development.ts"
                 }
               ]
             }
@@ -99,7 +99,7 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/cyan-orange.css",
-              "src/styles.scss"
+              "web/styles.scss"
             ],
             "scripts": []
           }
