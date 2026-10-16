@@ -1,4 +1,4 @@
-# Render Blueprint: the API (server/) and the web app (Angular, repository root).
+# Render Blueprint: the API (server/) and the web app (web/). Each redeploys only when its folder changes.
 # Render > New > Blueprint > pick this repository. Values marked `sync: false` are asked for on creation.
 services:
   - type: web
@@ -32,11 +32,9 @@ services:
   - type: web
     name: folkapp-web
     runtime: static
+    rootDir: web
     buildCommand: npm ci && npm run build
     staticPublishPath: dist/folkapp-web/browser
-    buildFilter:
-      ignoredPaths:
-        - server/**
     routes:
       # Angular routes (/artist/:id, /search, ...) are handled in the browser.
       - type: rewrite
