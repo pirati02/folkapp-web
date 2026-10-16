@@ -25,8 +25,8 @@ npm run drive:verify     # checks every song/image in the database exists in Dri
 ### Local development with the web app
 
 1. `docker compose up -d` starts Postgres on `localhost:5433` (user/password/db: `folk`/`folk`/`folkapp`).
-2. Google access for the API, via the [Cloud Console](https://console.cloud.google.com) in project
-   `folk-app-fb823` (no billing needed):
+2. Google access for the API, via the [Cloud Console](https://console.cloud.google.com) in any Google Cloud
+   project, e.g. `folk-app-fb823` (no billing needed):
    - APIs & Services → Library → enable **Google Drive API**;
    - IAM & Admin → Service Accounts → create one with the id `folkapp-api` (no roles needed);
    - in that account: Keys → Add key → JSON, saved as `server/service-account.json` (gitignored);
@@ -58,9 +58,11 @@ What that means in practice:
   unavailable"), and the next play works again once the quota resets.
 - Links never expire, so cached and shared songs keep working.
 
-## Going live
+## Going live on Render
 
-The songs are in Google Drive and AWS is gone. The old RDS database went with it, so the catalog is
+Both parts run on [Render](https://render.com), defined in `render.yaml` at the repository root:
+`folkapp-api` (this server, a Node web service) and `folkapp-web` (the Angular app, a static site).
+Render deploys both on every push to `master`. The old RDS database went with AWS, so the catalog is
 rebuilt from the Drive folders, the same way it was originally seeded from S3. What can't be rebuilt
 from Drive (user accounts, playlists, favourites, play counts, holidays) starts empty; the web app
 doesn't use any of it.
@@ -78,58 +80,36 @@ The songs folder (`GDRIVE_AUDIO_FOLDER_ID`) must directly contain the type folde
 
 `ensembles` → ensemble, `oldRecordings` → old recording; a file under a `chants` folder is a chant,
 anything else a song. The file name without `.mp3` is the song's title. Holiday images go in their own
-folder (`GDRIVE_IMAGE_FOLDER_ID`). A folder's id is the last part of its URL.
+folder (`GDRIVE_IMAGE_FOLDER_ID`). A folder's id is the last part of its URL. Both folders must be
+shared with the service account (see "Local development" above).
 
 ### 2. Database
 
-Create an empty Postgres. Neon's free tier is enough (it runs on AWS infrastructure but needs no AWS
-account); Google Cloud SQL (about $10 a month) keeps everything in Google Cloud, and then also needs
-`--add-cloudsql-instances` in the deploy workflow and a `?host=/cloudsql/<connection-name>` `DATABASE_URL`.
+Render's free Postgres is deleted 30 days after creation unless upgraded (about $6 a month), so either
+pay for it or use a free Postgres elsewhere, e.g. [Neon](https://neon.tech). The database only holds
+the catalog, which `drive:sync` can rebuild at any time.
 
 ### 3. Fill the catalog from Drive
 
-In `server/.env` set `DATABASE_URL` and `GDRIVE_AUDIO_FOLDER_ID`, and give the script Google access in
-one of two ways:
+With `DATABASE_URL` in `.env` pointing at the hosted database, run `npm run drive:sync -- --dry-run`
+(shows what it found and skipped, and why), then `npm run drive:sync`. Re-run it whenever you upload new
+songs: it only adds what's new and never deletes.
 
-- your own login: `gcloud auth application-default login --scopes=https://www.googleapis.com/auth/drive.readonly,https://www.googleapis.com/auth/cloud-platform`
-  (if Google blocks Drive access for gcloud's login, use the other option); or
-- a key for the `folkapp-api` service account (created in step 4) in `GOOGLE_SERVICE_ACCOUNT_KEY_FILE`.
-  Delete the key afterwards.
+### 4. Create the services
 
-```bash
-npm run drive:sync -- --dry-run   # shows what it found and which files it skipped, and why
-npm run drive:sync                # creates the tables and adds the artists and songs
-```
+1. Push the repository to GitHub, then in Render: **New → Blueprint**, pick the repository.
+2. Render asks for the values marked `sync: false`: `DATABASE_URL`, the two `GDRIVE_*` folder ids, and
+   `GOOGLE_SERVICE_ACCOUNT_KEY` (paste the whole contents of `service-account.json`). `JWT_SECRET` is
+   generated.
+3. Render checks `/health` after each deploy, which fails unless both the database and the Drive folders
+   are reachable.
+4. If Render gives the services different URLs than `folkapp-api.onrender.com` and
+   `folkapp-web.onrender.com` (names are first come, first served), update `apiUrl` in
+   `src/environments/environment.ts` and the API's `CORS_ORIGINS`.
 
-Re-run `npm run drive:sync` whenever you upload new songs: it only adds what's new and never deletes.
-
-### 4. Deploy to Google Cloud Run
-
-The API runs on Cloud Run in the Firebase project (`folk-app-fb823`, region `europe-west1`), deployed
-by `.github/workflows/server-deploy.yml` on every push to `master` that touches `server/`. GitHub signs
-in to Google Cloud through Workload Identity Federation, so no keys are stored in GitHub. On Cloud Run
-the API reads Drive as its own service account, so no key file is needed there either.
-
-1. Cloud Run needs billing: switch the Firebase project to the **Blaze** plan (pay as you go; the free
-   tiers still apply) and set a budget alert in Google Cloud Billing.
-2. Install the [gcloud CLI](https://cloud.google.com/sdk/docs/install), run `gcloud auth login`, then
-   `bash server/deploy/setup-gcp.sh`. It enables the APIs and creates the image repository, the two
-   service accounts, the secrets (it asks for `DATABASE_URL` and generates `JWT_SECRET`), and the GitHub
-   sign-in. At the end it prints what's left:
-   - share the Drive folder(s) with `folkapp-api@folk-app-fb823.iam.gserviceaccount.com` as Viewer;
-   - add four repository **variables** in GitHub (provider, deployer account, two folder ids).
-3. Run the **Deploy API to Cloud Run** workflow from the Actions tab. It tests, builds, deploys, and
-   finally calls `/health`, which fails unless both the database and the Drive folders are reachable.
-
-Cost to keep in mind: audio streams through the API, so Cloud Run's outbound traffic is the main cost
-once past its free allowance. Roughly, 1,000 plays a day of ~5 MB songs is about 150 GB a month.
-`--max-instances=3` caps runaway scaling. Each response is at most 8 MB (players fetch songs in ranged
-chunks), and whole-file downloads are streamed, so long recordings stay within Cloud Run's limits.
-
-### 5. Point the web app at it
-
-Put the Cloud Run URL in `src/environments/environment.ts` (`apiUrl`) and push; Firebase Hosting
-deploys it. (`ng serve` uses `environment.development.ts`, i.e. a local API on port 8080.)
+Free-plan behaviour to keep in mind: the API sleeps after 15 minutes without traffic, so the first
+request after a quiet period takes up to about a minute. All audio streams through the API, so plays
+count against Render's monthly bandwidth allowance.
 
 ## Endpoints
 
