@@ -4,10 +4,11 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { AppModule } from './app.module';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { environment } from '../environments/environment';
 
 export var baseUrlProvider: ValueProvider = <ValueProvider> {
   provide: 'BASE_URL',
-  useValue: 'https://ammpjt8siw.us-east-1.awsapprunner.com'
+  useValue: environment.apiUrl
 }
 
 export const appConfig: ApplicationConfig = {

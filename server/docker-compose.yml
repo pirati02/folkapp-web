@@ -1,0 +1,16 @@
+# Local Postgres for development: `docker compose up -d` (from server/).
+# The tables are created by `npm run drive:sync`, or by loading db/schema.sql.
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: folk
+      POSTGRES_PASSWORD: folk
+      POSTGRES_DB: folkapp
+    ports:
+      - "5433:5432"
+    volumes:
+      - folkapp-postgres:/var/lib/postgresql/data
+
+volumes:
+  folkapp-postgres:
