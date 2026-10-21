@@ -10,6 +10,7 @@ import {MediaController} from "../../services/media.controller";
 import {ArtistsService} from "../../services/artists.service";
 import {BottomBarService, mainNavItems} from "../../services/bottom-bar.service";
 import {LocalStore} from "../../services/local-store.service";
+import {NavigationHistory} from "../../services/navigation-history.service";
 
 const MIN_TERM_LENGTH = 2;
 const RECENT_SEARCHES_KEY = 'folkapp.recentSearches';
@@ -37,6 +38,7 @@ export class SearchComponent implements OnInit {
   constructor(
     protected router: Router,
     protected mediaController: MediaController,
+    protected history: NavigationHistory,
     private route: ActivatedRoute,
     private searchService: SearchService,
     private artistService: ArtistsService,

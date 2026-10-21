@@ -3,7 +3,9 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {Artist} from "../../models/artist";
 import {combineLatest, finalize, forkJoin} from "rxjs";
 import {Song} from "../../models/song";
-import {SongsService} from "../../services/songs.service";
+import {SongSort, SongsService} from "../../services/songs.service";
+import {NavigationHistory} from "../../services/navigation-history.service";
+import {ArtistType} from "../../models/artist.type";
 import {SongType} from "../../models/song.type";
 import {MediaController} from "../../services/media.controller";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -23,6 +25,7 @@ export class ArtistComponent implements OnInit {
     songs: Song[] = [];
     chants: Song[] = [];
     songType: SongType = SongType.Song;
+    sort: SongSort = 'name';
     bottomBarItems: BottomBarItem[] = [
         <BottomBarItem>{
             id: SongType.Song,
@@ -46,6 +49,7 @@ export class ArtistComponent implements OnInit {
 
     constructor(
         public router: Router,
+        private history: NavigationHistory,
         public mediaController: MediaController,
         private artistService: ArtistsService,
         private songService: SongsService,
@@ -66,6 +70,22 @@ export class ArtistComponent implements OnInit {
             .subscribe(([params, query]) => this.load(params['id'], query['song']));
     }
 
+    close() {
+        const type = this.artist?.artistType == 'oldRecordings' ? ArtistType.OLD_RECORDINGS : ArtistType.ARTIST;
+        this.history.back('/artists/' + type);
+    }
+
+    changeSort(sort: SongSort) {
+        if (sort == this.sort || !this.artist) {
+            return;
+        }
+        this.sort = sort;
+        this.songService.songsByArtistId(this.artist.id, sort).subscribe(lists => {
+            this.songs = lists.songs;
+            this.chants = lists.chants;
+        });
+    }
+
     selectSong(song: Song) {
         this.mediaController.playList = this.visibleSongs;
         this.mediaController.selectedArtist = this.artist;
@@ -76,7 +96,7 @@ export class ArtistComponent implements OnInit {
         this.loading = true;
         forkJoin({
             artist: this.artistService.artistById(artistId),
-            lists: this.songService.songsByArtistId(artistId)
+            lists: this.songService.songsByArtistId(artistId, this.sort)
         })
             .pipe(finalize(() => this.loading = false))
             .subscribe(({artist, lists}) => {

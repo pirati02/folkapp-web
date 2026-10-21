@@ -1,0 +1,160 @@
+@import '../../../variables';
+
+.header {
+  justify-content: space-between;
+}
+
+.header-title {
+  flex: 1;
+}
+
+.header-spacer,
+.header-action {
+  width: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.header-action {
+  color: $choco;
+}
+
+.picks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+.pick {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-left: 4px solid $choco;
+  border-radius: 8px;
+  background: $skin;
+  color: #000;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pick-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 3px;
+}
+
+.pick-label {
+  font-size: 11px;
+  color: $choco;
+}
+
+.pick-name,
+.pick-artist {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pick-name {
+  font-size: 16px;
+}
+
+.pick-artist {
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+.pick-play {
+  color: $choco;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.pick.is-active .pick-name {
+  color: $choco;
+}
+
+.section-title {
+  margin: 12px 16px 0;
+  font-size: 13px;
+  font-weight: normal;
+  color: #6b6b6b;
+}
+
+.holiday-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px 0;
+}
+
+.holiday-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex: none;
+  overflow: hidden;
+  border-radius: 8px;
+  background: $skin;
+  color: $choco;
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.holiday-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 3px;
+}
+
+.holiday-date {
+  font-size: 12px;
+  color: $choco;
+}
+
+.holiday-title {
+  font-size: 16px;
+}
+
+.icon-button {
+  display: flex;
+  padding: 4px;
+  border: none;
+  background: none;
+  color: $choco;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.retry-button {
+  padding: 8px 16px;
+  border: 1px solid $choco;
+  border-radius: 6px;
+  background: none;
+  color: $choco;
+  font-size: 14px;
+  cursor: pointer;
+}

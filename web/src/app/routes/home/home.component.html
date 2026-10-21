@@ -1,0 +1,60 @@
+<div class="tab-list-footer-page">
+  <div class="header d-flex">
+    <span class="header-spacer"></span>
+    <span class="header-title">მთავარი</span>
+    <a class="header-action" routerLink="/search" aria-label="ძიება">
+      <mat-icon>search</mat-icon>
+    </a>
+  </div>
+
+  <div class="page-body" *ngIf="!loading && dashboard">
+    <section class="picks" *ngIf="picks.length">
+      <button class="pick" *ngFor="let pick of picks" (click)="playPick(pick)"
+              [class.is-active]="pick.song.id === mediaController.selectedSong?.id">
+        <span class="pick-text">
+          <span class="pick-label">{{ pick.label }}</span>
+          <span class="pick-name">{{ pick.song.name }}</span>
+          <span class="pick-artist">{{ pick.song.artistName }}</span>
+        </span>
+        <mat-icon class="pick-play">play_circle</mat-icon>
+      </button>
+    </section>
+
+    <section *ngIf="dashboard.holidays.length">
+      <h3 class="section-title">დღესასწაულები</h3>
+      <div class="holiday" *ngFor="let holiday of dashboard.holidays">
+        <div class="holiday-head">
+          <div class="holiday-image">
+            <mat-icon>event</mat-icon>
+            <img [src]="holiday.imagePath" alt="" loading="lazy" (error)="hideImage($event)">
+          </div>
+          <div class="holiday-text">
+            <span class="holiday-date">{{ dayLabel(holiday) }}</span>
+            <span class="holiday-title">{{ holiday.title }}</span>
+          </div>
+          <button class="icon-button" *ngIf="holiday.songs.length" (click)="play(holiday.songs)"
+                  aria-label="ყველას მოსმენა">
+            <mat-icon>play_circle</mat-icon>
+          </button>
+        </div>
+        <app-song-list [songs]="holiday.songs" [showArtist]="true" [activeId]="mediaController.selectedSong?.id"
+                       (songSelected)="play(holiday.songs, $event)"></app-song-list>
+      </div>
+    </section>
+
+    <section *ngIf="popular.length">
+      <h3 class="section-title">ყველაზე მოსმენილი</h3>
+      <app-song-list [songs]="popular" [showArtist]="true" [activeId]="mediaController.selectedSong?.id"
+                     (songSelected)="play(popular, $event)"></app-song-list>
+    </section>
+  </div>
+
+  <div class="spinner-row d-flex justify-content-center align-items-center" *ngIf="loading">
+    <mat-progress-spinner mode="indeterminate" [strokeWidth]="7" [diameter]="40"></mat-progress-spinner>
+  </div>
+
+  <div class="spinner-row d-flex flex-column justify-content-center align-items-center" *ngIf="failed">
+    <h4>ჩატვირთვა ვერ მოხერხდა</h4>
+    <button class="retry-button" (click)="load()">თავიდან ცდა</button>
+  </div>
+</div>

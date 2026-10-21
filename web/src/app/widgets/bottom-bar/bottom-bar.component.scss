@@ -18,7 +18,11 @@
   .item {
     flex-grow: 1;
     color: black;
-    font-size: 0.5em;
+    min-width: 0;
+    padding: 0 4px;
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: center;
   }
 
   .item mat-icon {

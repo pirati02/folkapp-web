@@ -3,9 +3,20 @@ import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { BottomBarItem } from "../widgets/bottom-bar/bottom-bar.component";
 import { ArtistType } from "../models/artist.type";
 
+/** Bottom-bar id of the home page; the artist lists use their ArtistType. */
+export const NAV_HOME = 0;
+
 /** The app's main sections; `selectedType` marks the current one (none, e.g. on search). */
-export function mainNavItems(selectedType?: ArtistType): BottomBarItem[] {
+export function mainNavItems(selectedType?: ArtistType | typeof NAV_HOME): BottomBarItem[] {
     return [
+        <BottomBarItem>{
+            id: NAV_HOME,
+            icon: 'home',
+            title: 'მთავარი',
+            link: '/',
+            isSelected: selectedType === NAV_HOME,
+            isVisible: true
+        },
         <BottomBarItem>{
             id: ArtistType.ARTIST,
             icon: 'group',

@@ -1,6 +1,6 @@
 <div class="tab-list-footer-page">
   <div class="header d-flex">
-    <button class="close-button" (click)="router.navigate(['..'])">
+    <button class="close-button" (click)="close()">
       <mat-icon>close</mat-icon>
     </button>
     <span class="header-title">
@@ -9,6 +9,10 @@
   </div>
 
   <div class="page-body" *ngIf="!loading">
+    <div class="sort-row d-flex" *ngIf="visibleSongs.length > 1">
+      <button class="chip" [class.is-on]="sort === 'name'" (click)="changeSort('name')">ა–ჰ</button>
+      <button class="chip" [class.is-on]="sort === 'popular'" (click)="changeSort('popular')">პოპულარული</button>
+    </div>
     <app-song-list [songs]="visibleSongs" [activeId]="mediaController.selectedSong?.id"
                    (songSelected)="selectSong($event)"></app-song-list>
     <h4 class="empty-text" *ngIf="showEmptyListText">სია ცარიელია</h4>

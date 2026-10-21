@@ -4,6 +4,8 @@ import {map, Observable} from "rxjs";
 import {Song} from "../models/song";
 import {BaseResponse} from "../models/base-response";
 
+export type SongSort = 'name' | 'popular';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,14 +18,14 @@ export class SongsService {
 
   }
 
-  songsByArtistId(id: string): Observable<{
+  songsByArtistId(id: string, sort: SongSort = 'name'): Observable<{
     songs: Song[],
     chants: Song[]
   }> {
     return this.httpClient.get<BaseResponse<{
       songs: Song[],
       chants: Song[]
-    }>>(this.baseUrl + '/songs/' + id + '/all').pipe(
+    }>>(this.baseUrl + '/songs/' + id + '/all', {params: {sort}}).pipe(
       map(data => data.body)
     );
   }

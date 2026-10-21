@@ -55,6 +55,26 @@ describe('songs', () => {
     ]);
   });
 
+  it('sorts an artist’s songs by plays on request', async () => {
+    const response = await ctx.app.inject(`/songs/${ids.rustavi}/all?sort=popular`);
+    expect(response.json().body.songs.map((song: { id: string }) => song.id)).toEqual([ids.chakrulo, ids.mravalzhamieri]);
+  });
+
+  it('lists the most played songs, optionally of one type', async () => {
+    const all = await ctx.app.inject('/songs/popular');
+    expect(all.json().body.map((song: { id: string }) => song.id)).toEqual([
+      ids.chakrulo,
+      ids.shenXarVenaxi,
+      ids.mravalzhamieri,
+    ]);
+
+    const chants = await ctx.app.inject('/songs/popular?type=2&limit=5');
+    expect(chants.json().body.map((song: { id: string }) => song.id)).toEqual([ids.shenXarVenaxi]);
+
+    const invalid = await ctx.app.inject('/songs/popular?type=7');
+    expect(invalid.statusCode).toBe(400);
+  });
+
   it('streams a song from storage by its path', async () => {
     const response = await ctx.app.inject(`/songs/${ids.chakrulo}/stream`);
     expect(response.statusCode).toBe(200);

@@ -16,6 +16,10 @@ export class ArtistsComponent {
   artists: Artist[] = [];
   private artistType: ArtistType = ArtistType.ARTIST;
 
+  get title(): string {
+    return this.artistType == ArtistType.OLD_RECORDINGS ? 'ძველი ჩანაწერები' : 'ანსამბლები';
+  }
+
   constructor(
     private artistsService: ArtistsService,
     private router: Router,
