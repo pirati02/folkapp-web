@@ -1,0 +1,15 @@
+<div class="queue" role="dialog" aria-label="დასაკრავი სია">
+  <div class="header d-flex">
+    <button class="close-button" (click)="closed.emit()" aria-label="დახურვა">
+      <mat-icon>expand_more</mat-icon>
+    </button>
+    <span class="header-title">დასაკრავი სია</span>
+    <span class="count">{{ songs.length }}</span>
+  </div>
+
+  <div class="page-body">
+    <app-song-list [songs]="songs" [showArtist]="true" [activeId]="mediaController.selectedSong?.id"
+                   (songSelected)="play($event)"></app-song-list>
+    <p class="empty-text" *ngIf="!songs.length">დასაკრავი სია ცარიელია</p>
+  </div>
+</div>

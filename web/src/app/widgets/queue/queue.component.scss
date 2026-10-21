@@ -1,0 +1,50 @@
+:host {
+  position: absolute;
+  inset: 0;
+  z-index: 200; // above the page and its search button
+}
+
+.queue {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  animation: slide-up 160ms ease-out;
+}
+
+.close-button {
+  display: flex;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.header-title {
+  flex: 1;
+}
+
+.count {
+  min-width: 24px;
+  font-size: 13px;
+  font-weight: normal;
+  color: #6b6b6b;
+}
+
+.empty-text {
+  margin: 2rem 1rem;
+  text-align: center;
+  color: #6b6b6b;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .queue {
+    animation: none;
+  }
+}

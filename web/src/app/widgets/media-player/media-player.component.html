@@ -19,6 +19,10 @@
         <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="playNext()">skip_next</mat-icon>
       </button>
       <div style="flex-grow: 1;"></div>
+      <button class="action-button" [class.is-on]="queueOpen" (click)="queueToggled.emit()"
+              [attr.aria-label]="queueOpen ? 'დასაკრავი სიის დახურვა' : 'დასაკრავი სია'" [attr.aria-expanded]="queueOpen">
+        <mat-icon>queue_music</mat-icon>
+      </button>
       <button class="action-button" *ngIf="mediaController.selectedSong as song" (click)="library.toggleFavorite(song)"
               [attr.aria-label]="library.isFavorite(song.id) ? 'რჩეულებიდან ამოღება' : 'რჩეულებში დამატება'">
         <mat-icon>{{ library.isFavorite(song.id) ? 'favorite' : 'favorite_border' }}</mat-icon>

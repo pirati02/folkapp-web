@@ -67,3 +67,8 @@
   font-size: 11px;
   text-align: center;
 }
+
+.action-button.is-on {
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}

@@ -1,4 +1,4 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {MediaController} from "../../services/media.controller";
 import {RepeatType} from "../../models/repeate.type";
 import {MatIconModule} from "@angular/material/icon";
@@ -16,6 +16,9 @@ import {Song} from "../../models/song";
   imports: [CommonModule, MatIconModule]
 })
 export class MediaPlayerComponent implements OnInit {
+
+  @Input() queueOpen = false;
+  @Output() queueToggled = new EventEmitter<void>();
 
   repeatType?: RepeatType;
   /** Short message shown over the player, e.g. after copying a link. */

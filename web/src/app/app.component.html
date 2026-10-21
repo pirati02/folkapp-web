@@ -4,9 +4,10 @@
   </div>
   <div class="content">
     <router-outlet></router-outlet>
+    <app-queue *ngIf="queueOpen" (closed)="queueOpen = false"></app-queue>
   </div>
   <div class="player-container">
-    <app-media-player>
+    <app-media-player [queueOpen]="queueOpen" (queueToggled)="queueOpen = !queueOpen">
     </app-media-player>
 
     <app-bottom-bar>
