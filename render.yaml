@@ -1,11 +1,13 @@
 # Render Blueprint: the API (server/) and the web app (web/). Each redeploys only when its folder changes.
 # Render > New > Blueprint > pick this repository. Values marked `sync: false` are asked for on creation.
+# Names and region match the live services: the API is `folkapp-web` (folkapp-web.onrender.com, which
+# web/src/environments/environment.ts calls) and the site is `folkapp-web-1` (folkapp-web-1.onrender.com).
 services:
   - type: web
-    name: folkapp-api
+    name: folkapp-web
     runtime: node
     plan: free
-    region: frankfurt
+    region: oregon
     rootDir: server
     buildCommand: npm ci --include=dev && npm run build
     startCommand: npm start
@@ -16,7 +18,7 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: CORS_ORIGINS
-        value: https://folkapp-web.onrender.com
+        value: https://folkapp-web-1.onrender.com
       # The web app; shared song links open the song there.
       - key: WEB_BASE_URL
         value: https://folkapp-web-1.onrender.com
@@ -29,7 +31,7 @@ services:
         sync: false
 
   - type: web
-    name: folkapp-web
+    name: folkapp-web-1
     runtime: static
     rootDir: web
     buildCommand: npm ci && npm run build

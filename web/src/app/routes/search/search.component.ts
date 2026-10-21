@@ -10,6 +10,13 @@ import {MediaController} from "../../services/media.controller";
 import {BottomBarService, mainNavItems} from "../../services/bottom-bar.service";
 import {LocalStore} from "../../services/local-store.service";
 import {NavigationHistory} from "../../services/navigation-history.service";
+import {CommonModule} from "@angular/common";
+import {MatIconModule} from "@angular/material/icon";
+import {MatListModule} from "@angular/material/list";
+import {MatDividerModule} from "@angular/material/divider";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {SongListComponent} from "../../widgets/song-list/song-list.component";
+import {HighlightPipe} from "../../shared/highlight.pipe";
 
 const MIN_TERM_LENGTH = 2;
 const RECENT_SEARCHES_KEY = 'folkapp.recentSearches';
@@ -24,7 +31,9 @@ type SearchState =
 @Component({
   selector: "app-search",
   templateUrl: "./search.component.html",
-  styleUrls: ["./search.component.scss"]
+  styleUrls: ["./search.component.scss"],
+  standalone: true,
+  imports: [CommonModule, MatIconModule, MatListModule, MatDividerModule, MatProgressSpinnerModule, SongListComponent, HighlightPipe]
 })
 export class SearchComponent implements OnInit {
   @ViewChild('searchInput', {static: true}) searchInput!: ElementRef<HTMLInputElement>;

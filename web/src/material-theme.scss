@@ -1,0 +1,21 @@
+// Angular Material styles for only the components the app uses (the prebuilt cyan-orange theme
+// shipped ~70 kB of CSS for all of them). Same palettes as before; colours that matter to the
+// app's look are overridden with the tokens in theme.scss.
+@use '@angular/material' as mat;
+
+$theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$cyan-palette,
+    tertiary: mat.$orange-palette,
+  ),
+));
+
+html {
+  @include mat.core();
+  @include mat.icon-theme($theme);
+  @include mat.list-theme($theme);
+  @include mat.divider-theme($theme);
+  @include mat.progress-spinner-theme($theme);
+  @include mat.fab-theme($theme);
+}

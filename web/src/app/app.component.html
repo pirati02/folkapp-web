@@ -4,7 +4,9 @@
   </div>
   <div class="content">
     <router-outlet></router-outlet>
-    <app-queue *ngIf="playerView.view === 'queue'" (closed)="playerView.close()"></app-queue>
+    @defer (when playerView.view === 'queue') {
+      <app-queue *ngIf="playerView.view === 'queue'" (closed)="playerView.close()"></app-queue>
+    }
   </div>
   <div class="player-container">
     <div class="notice" [class.is-top]="playerView.view === 'full'" *ngIf="notice.message" role="status">{{ notice.message }}</div>
@@ -12,4 +14,6 @@
     <app-bottom-bar></app-bottom-bar>
   </div>
 </div>
-<app-full-player *ngIf="playerView.view === 'full'"></app-full-player>
+@defer (when playerView.view === 'full') {
+  <app-full-player *ngIf="playerView.view === 'full'"></app-full-player>
+}

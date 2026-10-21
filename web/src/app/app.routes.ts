@@ -3,11 +3,8 @@ import {ActivatedRouteSnapshot, Router, Routes} from '@angular/router';
 import {catchError, map, of} from 'rxjs';
 import {ArtistsComponent} from './routes/artists/artists.component';
 import {ArtistComponent} from './routes/artist/artist.component';
-import {SearchComponent} from "./routes/search/search.component";
 import {SongsService} from './services/songs.service';
 import {HomeComponent} from './routes/home/home.component';
-import {MeComponent} from './routes/me/me.component';
-import {StatsComponent} from './routes/stats/stats.component';
 
 /** Shared song links land on /song/:id; open the song in its ensemble's list, or home if it's gone. */
 const openSharedSong = (route: ActivatedRouteSnapshot) => {
@@ -38,17 +35,17 @@ export const routes: Routes = [
   {
     title: 'ძიება',
     path: 'search',
-    component: SearchComponent
+    loadComponent: () => import('./routes/search/search.component').then(m => m.SearchComponent)
   },
   {
     title: 'ჩემი',
     path: 'me',
-    component: MeComponent
+    loadComponent: () => import('./routes/me/me.component').then(m => m.MeComponent)
   },
   {
     title: 'სტატისტიკა',
     path: 'stats',
-    component: StatsComponent
+    loadComponent: () => import('./routes/stats/stats.component').then(m => m.StatsComponent)
   },
   {
     path: 'song/:id',
