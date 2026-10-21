@@ -15,10 +15,6 @@ services:
         value: "22"
       - key: DATABASE_URL
         sync: false
-      - key: JWT_SECRET
-        generateValue: true
-      - key: JWT_ISSUER
-        value: folkapp-api
       - key: CORS_ORIGINS
         value: https://folkapp-web.onrender.com
       - key: GDRIVE_AUDIO_FOLDER_ID

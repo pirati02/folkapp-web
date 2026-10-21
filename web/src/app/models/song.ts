@@ -6,7 +6,6 @@ export interface Song {
   songType: SongType;
   artistName: string;
   artistId: string;
-  isFav: boolean;
   path: string;
   isSelected: boolean;
 }

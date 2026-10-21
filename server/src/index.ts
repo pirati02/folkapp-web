@@ -1,5 +1,4 @@
 import { buildApp } from './app.js';
-import { createJwt } from './auth.js';
 import { loadConfig } from './config.js';
 import { createPgDb } from './db.js';
 import { createDriveStorage } from './storage/google-drive.js';
@@ -16,11 +15,6 @@ const app = await buildApp(
       imageFolderId: config.GDRIVE_IMAGE_FOLDER_ID,
       serviceAccountKey: config.GOOGLE_SERVICE_ACCOUNT_KEY,
       serviceAccountKeyFile: config.GOOGLE_SERVICE_ACCOUNT_KEY_FILE,
-    }),
-    jwt: createJwt({
-      secret: config.JWT_SECRET,
-      issuer: config.JWT_ISSUER,
-      expiresInSeconds: config.JWT_EXPIRATION_SECONDS,
     }),
     shortenUrl: createUrlShortener(config.TINYURL_TOKEN, (error) => app.log.warn({ err: error }, 'URL shortening failed')),
     corsOrigins: config.CORS_ORIGINS,

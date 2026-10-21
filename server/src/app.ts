@@ -1,13 +1,10 @@
 import cors from '@fastify/cors';
 import Fastify, { type FastifyError, type FastifyRequest, type FastifyServerOptions } from 'fastify';
-import type { Jwt } from './auth.js';
 import type { Db } from './db.js';
 import { fail, HttpError } from './http.js';
 import { linksFor, type Links } from './media.js';
-import { accountRoutes } from './routes/account.js';
 import { artistRoutes } from './routes/artists.js';
 import { dashboardRoutes } from './routes/dashboard.js';
-import { playListRoutes } from './routes/playlists.js';
 import { searchRoutes } from './routes/search.js';
 import { songRoutes } from './routes/songs.js';
 import type { Storage } from './storage/types.js';
@@ -16,7 +13,6 @@ import type { UrlShortener } from './url-shortener.js';
 export interface AppDeps {
   db: Db;
   storage: Storage;
-  jwt: Jwt;
   shortenUrl: UrlShortener;
   corsOrigins: string[];
   publicBaseUrl?: string;
@@ -35,14 +31,6 @@ export async function buildApp(deps: AppDeps, logger: FastifyServerOptions['logg
   });
 
   await app.register(cors, { origin: deps.corsOrigins.includes('*') ? true : deps.corsOrigins });
-
-  app.decorateRequest('account', null);
-  app.addHook('onRequest', async (request) => {
-    const header = request.headers.authorization;
-    if (header?.startsWith('Bearer ')) {
-      request.account = await deps.jwt.verify(header.slice('Bearer '.length).trim());
-    }
-  });
 
   app.setErrorHandler<FastifyError | HttpError>((error, request, reply) => {
     if (error instanceof HttpError) {
@@ -74,8 +62,6 @@ export async function buildApp(deps: AppDeps, logger: FastifyServerOptions['logg
   artistRoutes(app, routeDeps);
   songRoutes(app, routeDeps);
   searchRoutes(app, routeDeps);
-  accountRoutes(app, routeDeps);
-  playListRoutes(app, routeDeps);
   dashboardRoutes(app, routeDeps);
 
   return app;

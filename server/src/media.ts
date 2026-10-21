@@ -23,23 +23,15 @@ export interface SongRow {
   songType: number;
   artistName: string;
   artistId: string;
-  isFav: boolean;
 }
 
-/**
- * Columns of a song response, for queries over `media."Song" s` joined with `media."Artist" a`.
- * `$1` must be the signed-in account's id (or null), which drives `isFav`.
- */
+/** Columns of a song response, for queries over `media."Song" s` joined with `media."Artist" a`. */
 export const SONG_COLUMNS = `
   s."Id" AS id,
   s."Name" AS name,
   s."SongType" AS "songType",
   a."Name" AS "artistName",
-  a."Id" AS "artistId",
-  EXISTS (
-    SELECT 1 FROM favourite."AccountFavouriteSong" f
-    WHERE f."SongId" = s."Id" AND f."AccountId" = $1::uuid
-  ) AS "isFav"`;
+  a."Id" AS "artistId"`;
 
 export const SONGS_WITH_ARTIST = `media."Song" s JOIN media."Artist" a ON a."Id" = s."ArtistId"`;
 

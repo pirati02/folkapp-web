@@ -50,7 +50,6 @@ describe('songs', () => {
         songType: 2,
         artistName: 'რუსთავი',
         artistId: ids.rustavi,
-        isFav: false,
         path: `https://api.test/songs/${ids.shenXarVenaxi}/stream`,
       },
     ]);

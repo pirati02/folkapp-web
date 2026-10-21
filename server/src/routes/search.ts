@@ -21,8 +21,8 @@ export function searchRoutes(app: FastifyInstance, { db, links }: RouteDeps) {
       ),
       db.query<SongRow>(
         `SELECT ${SONG_COLUMNS} FROM ${SONGS_WITH_ARTIST}
-         WHERE s."Name" ILIKE $2 ORDER BY s."Name" LIMIT ${MAX_RESULTS}`,
-        [request.account?.id ?? null, pattern],
+         WHERE s."Name" ILIKE $1 ORDER BY s."Name" LIMIT ${MAX_RESULTS}`,
+        [pattern],
       ),
     ]);
 

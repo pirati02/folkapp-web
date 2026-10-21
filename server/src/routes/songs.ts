@@ -1,8 +1,6 @@
-import { randomUUID } from 'node:crypto';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import type { RouteDeps } from '../app.js';
-import { currentAccount } from '../auth.js';
 import { errors, ok, parse, uuidParam } from '../http.js';
 import { SONG_COLUMNS, SONGS_WITH_ARTIST, SongType, toSong, type SongRow } from '../media.js';
 import { sendFile } from '../storage/types.js';
@@ -41,8 +39,8 @@ export function songRoutes(app: FastifyInstance, { db, storage, links, shortenUr
   app.get<{ Params: { id: string } }>('/songs/:id/all', async (request) => {
     const artistId = uuidParam(request.params.id);
     const { rows } = await db.query<SongRow>(
-      `SELECT ${SONG_COLUMNS} FROM ${SONGS_WITH_ARTIST} WHERE s."ArtistId" = $2 ORDER BY s."Name"`,
-      [request.account?.id ?? null, artistId],
+      `SELECT ${SONG_COLUMNS} FROM ${SONGS_WITH_ARTIST} WHERE s."ArtistId" = $1 ORDER BY s."Name"`,
+      [artistId],
     );
 
     const songs = rows.map((row) => toSong(row, links(request)));
@@ -75,45 +73,4 @@ export function songRoutes(app: FastifyInstance, { db, storage, links, shortenUr
     return ok(true);
   });
 
-  /** Toggles the favourite flag; responds `true` when marked and `false` when unmarked. */
-  app.put<{ Params: { id: string } }>('/songs/:id/mark-as-favourite', async (request) => {
-    const account = currentAccount(request);
-    const songId = uuidParam(request.params.id);
-
-    return db.transaction(async (tx) => {
-      const { rowCount: songExists } = await tx.query(`SELECT 1 FROM media."Song" WHERE "Id" = $1`, [songId]);
-      if (!songExists) {
-        throw errors.songNotFound();
-      }
-
-      const { rowCount: removed } = await tx.query(
-        `DELETE FROM favourite."AccountFavouriteSong" WHERE "AccountId" = $1 AND "SongId" = $2`,
-        [account.id, songId],
-      );
-      if (removed) {
-        return ok(false);
-      }
-
-      await tx.query(
-        `INSERT INTO favourite."AccountFavouriteSong" ("Id", "AccountId", "SongId", "CreateDate")
-         VALUES ($1, $2, $3, now())`,
-        [randomUUID(), account.id, songId],
-      );
-      return ok(true);
-    });
-  });
-
-  app.get('/songs/favourites', async (request) => {
-    const account = currentAccount(request);
-    const { rows } = await db.query<SongRow>(
-      `SELECT ${SONG_COLUMNS}
-       FROM favourite."AccountFavouriteSong" fav
-       JOIN media."Song" s ON s."Id" = fav."SongId"
-       JOIN media."Artist" a ON a."Id" = s."ArtistId"
-       WHERE fav."AccountId" = $1
-       ORDER BY fav."CreateDate" DESC`,
-      [account.id],
-    );
-    return ok(rows.map((row) => toSong(row, links(request))));
-  });
 }

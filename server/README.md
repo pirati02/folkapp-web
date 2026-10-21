@@ -3,15 +3,16 @@
 Node.js replacement for the .NET `FolkApp.API`, with **no AWS dependencies**: songs and holiday images
 are streamed from **Google Drive**, and the database is any PostgreSQL with the existing FolkApp schema.
 
-It keeps the .NET API's routes, JSON shapes (`{ body, error }`), status codes, and JWT claims, so the web
-app switches by changing only its API URL.
+It keeps the .NET API's catalog routes, JSON shapes (`{ body, error }`) and status codes, so the web
+app switches by changing only its API URL. Accounts, sign-in, favourites and playlists were dropped:
+the API is public and stateless per user.
 
-Stack: Node 22, TypeScript, Fastify 5, `pg`, `jose`, `zod`, `google-auth-library`.
+Stack: Node 22, TypeScript, Fastify 5, `pg`, `zod`, `google-auth-library`.
 
 ## Run
 
 ```bash
-cp .env.example .env     # fill in DATABASE_URL, JWT_*, GDRIVE_* and the service-account key
+cp .env.example .env     # fill in DATABASE_URL, GDRIVE_* and the service-account key
 npm install
 npm run dev              # http://localhost:8080
 npm test                 # runs against an in-memory Postgres (PGlite); no Docker needed
@@ -64,8 +65,7 @@ Both parts run on [Render](https://render.com), defined in `render.yaml` at the 
 `folkapp-api` (this server, a Node web service) and `folkapp-web` (the Angular app, a static site).
 Render deploys both on every push to `master`. The old RDS database went with AWS, so the catalog is
 rebuilt from the Drive folders, the same way it was originally seeded from S3. What can't be rebuilt
-from Drive (user accounts, playlists, favourites, play counts, holidays) starts empty; the web app
-doesn't use any of it.
+from Drive (play counts, holidays) starts empty.
 
 ### 1. Drive layout
 
@@ -99,8 +99,7 @@ songs: it only adds what's new and never deletes.
 
 1. Push the repository to GitHub, then in Render: **New → Blueprint**, pick the repository.
 2. Render asks for the values marked `sync: false`: `DATABASE_URL`, the two `GDRIVE_*` folder ids, and
-   `GOOGLE_SERVICE_ACCOUNT_KEY` (paste the whole contents of `service-account.json`). `JWT_SECRET` is
-   generated.
+   `GOOGLE_SERVICE_ACCOUNT_KEY` (paste the whole contents of `service-account.json`).
 3. Render checks `/health` after each deploy, which fails unless both the database and the Drive folders
    are reachable.
 4. If Render gives the services different URLs than `folkapp-api.onrender.com` and
@@ -113,26 +112,19 @@ count against Render's monthly bandwidth allowance.
 
 ## Endpoints
 
-Routes are case-insensitive, as in ASP.NET. 🔒 = needs `Authorization: Bearer <token>`.
+Routes are case-insensitive, as in ASP.NET. None of them need authentication.
 
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/artists/:type/all` | `type`: 1 old recordings, 2 ensembles |
 | GET | `/artists/:id` | |
-| GET | `/songs/:artistId/all` | `{ songs, chants }`; `isFav` is filled in when signed in |
+| GET | `/songs/:artistId/all` | `{ songs, chants }` |
 | GET | `/songs/:id/stream` | **New.** The audio URL used as every song's `path`. Supports `Range` |
 | GET | `/songs/:id/file` | Same audio, as a download |
 | GET | `/songs/:id/share` | Shareable link (TinyURL-shortened if `TINYURL_TOKEN` is set) |
 | PUT | `/songs/:id/log` | `{ logType: 0 }` played, `1` downloaded |
-| PUT | `/songs/:id/mark-as-favourite` 🔒 | Toggles; `true` = now a favourite |
-| GET | `/songs/favourites` 🔒 | |
 | GET | `/search/:term` | Case-insensitive substring search, up to 100 of each |
-| POST | `/account/register` · `/account/login` · `/account/login-by-token` | |
-| PUT | `/account/verify/:id` | |
-| DELETE | `/account/deactivate` 🔒 | |
-| GET/POST | `/playlist` 🔒 | |
-| PUT/DELETE | `/playlist/:id` 🔒 | |
-| GET | `/dashboard?date=YYYY-MM-DD` 🔒 | |
+| GET | `/dashboard?date=YYYY-MM-DD` | |
 | GET | `/holidays/:id/image` | **New.** Holiday image, used as `imagePath` |
 | GET | `/health` | Checks the database connection |
 
@@ -142,23 +134,13 @@ Deliberate fixes. Everything else matches.
 
 - **Song `path` is a stable API link** (`/songs/:id/stream`) instead of a 7-day presigned S3 URL, so cached
   songs in the web app and shared links no longer die after a week.
-- **`login-by-token` verifies the token.** .NET read it without checking the signature, so anyone could
-  forge a token for any account and get a valid one back. Now the signature and issuer must be valid,
-  and the token must be one the API issued (it is in `AccountDevice`). Expired tokens are still accepted
-  here, since refreshing them is the point.
-- **`DELETE /account/deactivate` requires a valid token** (it had no `[Authorize]` and trusted unsigned
-  tokens). Deactivated accounts can no longer sign in.
-- **Playlists are scoped to their owner.** Any signed-in user could edit or delete anyone's playlist,
-  and playlist names had to be unique across all users.
-- **Passwords:** .NET derived the PBKDF2 salt from the password length, so it was effectively unsalted.
-  Existing hashes still verify and are re-hashed with a random salt on the next login. New accounts get
-  random salts. Once a user has signed in through this server, the .NET API can't verify their password,
-  so don't run both against the same database long-term.
+- **No accounts.** The `/account/*`, `/playlist` and favourite endpoints are gone, songs no longer
+  carry `isFav`, and `/dashboard` is public.
 - `artistType` is reported correctly (.NET serialized `1` as `"ensembles"` and `2` as `"oldRecordings"`).
 - Play/download counters are incremented atomically. Song lists are sorted by name.
 
 The holiday `title` still carries the holiday's *description*, as .NET sent it, so existing clients
-render the same. Email verification stays disabled, as it was.
+render the same.
 
 ## Adding new songs
 

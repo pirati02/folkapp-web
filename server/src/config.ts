@@ -17,10 +17,6 @@ const schema = z.object({
   /** e.g. postgres://user:pass@host:5432/FolkAppDatabase?sslmode=no-verify */
   DATABASE_URL: z.string().min(1),
 
-  JWT_SECRET: z.string().min(32),
-  JWT_ISSUER: z.string().min(1),
-  JWT_EXPIRATION_SECONDS: z.coerce.number().int().positive().default(36_000),
-
   /** Google Drive folders holding the songs and the holiday images; shared with the service account. */
   GDRIVE_AUDIO_FOLDER_ID: z.string().min(1),
   GDRIVE_IMAGE_FOLDER_ID: z.string().min(1),

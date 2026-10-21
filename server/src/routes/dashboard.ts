@@ -1,7 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import type { RouteDeps } from '../app.js';
-import { currentAccount } from '../auth.js';
 import { HttpError, ok, parse, uuidParam } from '../http.js';
 import { SONG_COLUMNS, SONGS_WITH_ARTIST, SongType, toSong, type SongRow } from '../media.js';
 import { sendFile } from '../storage/types.js';
@@ -17,14 +16,13 @@ const dashboardQuery = z.object({
 
 export function dashboardRoutes(app: FastifyInstance, { db, storage, links }: RouteDeps) {
   app.get('/dashboard', async (request) => {
-    const account = currentAccount(request);
     const day = parse(dashboardQuery, request.query).date ?? new Date().toISOString().slice(0, 10);
 
     const mostPlayed = (songType: number) =>
       db.query<SongRow>(
         `SELECT ${SONG_COLUMNS} FROM ${SONGS_WITH_ARTIST}
-         WHERE s."SongType" = $2 ORDER BY s."PlayCount" DESC LIMIT 1`,
-        [account.id, songType],
+         WHERE s."SongType" = $1 ORDER BY s."PlayCount" DESC LIMIT 1`,
+        [songType],
       );
 
     const [daySong, dayChant, holidays, holidaySongs] = await Promise.all([
@@ -41,8 +39,8 @@ export function dashboardRoutes(app: FastifyInstance, { db, storage, links }: Ro
          JOIN holiday."Holiday" h ON h."Id" = hs."HolidayId"
          JOIN media."Song" s ON s."Id" = hs."SongId"
          JOIN media."Artist" a ON a."Id" = s."ArtistId"
-         WHERE (h."Date" AT TIME ZONE 'UTC')::date = $2::date`,
-        [account.id, day],
+         WHERE (h."Date" AT TIME ZONE 'UTC')::date = $1::date`,
+        [day],
       ),
     ]);
 
