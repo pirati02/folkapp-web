@@ -1,5 +1,5 @@
 export const environment = {
-  // The `folkapp-api` service from render.yaml. If Render assigns a different URL, update it here
+  // The API web service on Render (named `folkapp-web`). If its URL changes, update it here
   // and in that service's CORS_ORIGINS.
-  apiUrl: 'https://folkapp-api.onrender.com'
+  apiUrl: 'https://folkapp-web.onrender.com'
 };
