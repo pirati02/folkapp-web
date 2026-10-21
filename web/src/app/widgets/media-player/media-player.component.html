@@ -1,57 +1,23 @@
-<div class="media-player d-flex flex-column" style="gap: 1rem;" *ngIf="mediaController.isInitialized">
-  <div class="notice" *ngIf="notice" role="status">{{ notice }}</div>
-  <div class="d-flex flex-row" style="gap: 1rem;">
-    <span style="flex-grow: 1;">
-      {{ mediaController.selectedSong?.name || 'დასაკრავი სია ცარიელია' }}
+<div class="mini-player" *ngIf="mediaController.selectedSong as song">
+  <div class="progress" [style.width.%]="progress"></div>
+
+  <button class="song" (click)="playerView.open('full')" aria-label="დამკვრელის გახსნა">
+    <span class="cover" aria-hidden="true">{{ song.name.charAt(0) }}</span>
+    <span class="text">
+      <span class="title">{{ song.name }}</span>
+      <span class="artist">{{ song.artistName }}</span>
     </span>
-  </div>
+  </button>
 
-  <div class="d-flex flex-column" style="gap: 1rem;">
-    <div class="d-flex flex-row">
-      <button class="action-button" [disabled]="!mediaController.isInitialized" (click)="playOrPause()">
-        <mat-icon>{{ mediaController.isPlaying ? 'pause_arrow' : 'play_arrow' }}</mat-icon>
-      </button>
-      <button class="action-button" [disabled]="!mediaController.isInitialized">
-        <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="playPrevious()">skip_previous
-        </mat-icon>
-      </button>
-      <button class="action-button" [disabled]="!mediaController.isInitialized">
-        <mat-icon class="d-flex align-items-center" style="flex-grow: 1;" (click)="playNext()">skip_next</mat-icon>
-      </button>
-      <div style="flex-grow: 1;"></div>
-      <button class="action-button" [class.is-on]="queueOpen" (click)="queueToggled.emit()"
-              [attr.aria-label]="queueOpen ? 'დასაკრავი სიის დახურვა' : 'დასაკრავი სია'" [attr.aria-expanded]="queueOpen">
-        <mat-icon>queue_music</mat-icon>
-      </button>
-      <button class="action-button" *ngIf="mediaController.selectedSong as song" (click)="library.toggleFavorite(song)"
-              [attr.aria-label]="library.isFavorite(song.id) ? 'რჩეულებიდან ამოღება' : 'რჩეულებში დამატება'">
-        <mat-icon>{{ library.isFavorite(song.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
-      </button>
-      <ng-container *ngIf="mediaController.selectedSong as song">
-        <button class="action-button" *ngIf="offline.supported" (click)="toggleDownload(song)"
-                [attr.aria-label]="offline.isDownloaded(song.id) ? 'მოწყობილობიდან წაშლა' : 'გადმოწერა'">
-          <ng-container *ngIf="offline.active$ | async as active">
-            <span class="progress" *ngIf="(active[song.id] ?? -2) >= 0; else icon">{{ active[song.id] * 100 | number: '1.0-0' }}%</span>
-            <ng-template #icon>
-              <mat-icon>{{ offline.isDownloaded(song.id) ? 'download_done' : (active[song.id] === -1 ? 'downloading' : 'download') }}</mat-icon>
-            </ng-template>
-          </ng-container>
-        </button>
-      </ng-container>
-      <button class="action-button" [disabled]="!mediaController.isInitialized" (click)="changeRepeatType()">
-        <mat-icon>{{ repeatType }}</mat-icon>
-      </button>
-      <button class="action-button" [disabled]="!mediaController.isInitialized" (click)="share()">
-        <mat-icon>share</mat-icon>
-      </button>
-    </div>
-
-    <div class="controls" style="margin: 0 1rem;">
-      <input type="range"
-             class="seek-bar"
-             [value]="mediaController.positionUpdated$.value.currentPos"
-             [max]="mediaController.positionUpdated$.value.maxPos"
-             (input)="rewind($event)">
-    </div>
-  </div>
+  <button class="icon-button" (click)="mediaController.togglePlay()"
+          [attr.aria-label]="mediaController.isPlaying ? 'პაუზა' : 'დაკვრა'">
+    <mat-icon>{{ mediaController.isPlaying ? 'pause' : 'play_arrow' }}</mat-icon>
+  </button>
+  <button class="icon-button" (click)="mediaController.next()" aria-label="შემდეგი">
+    <mat-icon>skip_next</mat-icon>
+  </button>
+  <button class="icon-button" [class.is-on]="playerView.view === 'queue'" (click)="playerView.toggle('queue')"
+          aria-label="დასაკრავი სია" [attr.aria-expanded]="playerView.view === 'queue'">
+    <mat-icon>queue_music</mat-icon>
+  </button>
 </div>

@@ -1,55 +1,64 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {RepeatType} from '../models/repeate.type';
 import {Song} from '../models/song';
-import {Artist} from '../models/artist';
 import {SongsService} from './songs.service';
 import {LibraryService} from './library.service';
 import {OfflineService} from './offline.service';
+import {LocalStore} from './local-store.service';
+import {NoticeService} from './notice.service';
 
 /** A play is counted once this much of a song has been heard, so skipped songs don't count. */
 const PLAY_LOG_SECONDS = 30;
+/** "Previous" restarts the song instead once this much of it has played. */
+const RESTART_SECONDS = 3;
+
+const SONG_KEY = 'selectedSong';
+const PLAYLIST_KEY = 'selectedPlaylistKey';
+const REPEAT_KEY = 'repeatType';
+const SHUFFLE_KEY = 'folkapp.shuffle';
+const POSITION_KEY = 'folkapp.position';
+
+/** Pause after some minutes, or when the current song ends. */
+export type SleepTimer = {minutes: number, endsAt: number} | {endOfSong: true};
 
 @Injectable({providedIn: 'root'})
 export class MediaController {
-  private selectedSongKey = 'selectedSong';
-  private selectedPlaylistKey = 'selectedPlaylistKey';
-  private repeatTypeKey = 'repeatType';
-
   private audio = new Audio();
-  private positionTimer?: any;
+  private positionTimer?: ReturnType<typeof setInterval>;
+  private sleepTimeout?: ReturnType<typeof setTimeout>;
   private playLogged = false;
+  /** The listener asked for this song to play (not just loaded), so a failure skips to the next. */
+  private wantsToPlay = false;
+  private failedInARow = 0;
+  /** Where to continue a restored song from, once its length is known. */
+  private resumeAt = 0;
+  /** Songs played in shuffle mode, for "previous". */
+  private shuffleHistory: Song[] = [];
 
-  /** playback state */
   isPlaying = false;
   isInitialized = false;
-
-  /** playlist + current song */
   playList: Song[] = [];
   selectedSong?: Song;
-  selectedArtist?: Artist;
-
-  /** state streams */
-  selectedSongChanged$ = new Subject<Song>();
-  repeatType: RepeatType = 'repeat';
-  positionUpdated$ = new BehaviorSubject<{ currentPos: number; maxPos: number }>({
-    currentPos: 0,
-    maxPos: 0
-  });
+  repeatType: RepeatType;
+  shuffle: boolean;
+  sleepTimer?: SleepTimer;
+  positionUpdated$ = new BehaviorSubject<{ currentPos: number; maxPos: number }>({currentPos: 0, maxPos: 0});
 
   get currentIndex(): number {
     return this.playList.findIndex(item => item.id == this.selectedSong?.id);
   }
 
-  get playerPosition(): number {
-    return this.audio.currentTime || 0;
-  }
-
   constructor(
     private songsService: SongsService,
     private library: LibraryService,
-    private offline: OfflineService
+    private offline: OfflineService,
+    private store: LocalStore,
+    private notice: NoticeService
   ) {
+    this.repeatType = store.get<RepeatType>(REPEAT_KEY, 'repeat');
+    this.shuffle = store.get(SHUFFLE_KEY, false);
+
     this.audio.onplay = () => {
       this.isPlaying = true;
       this.startPositionUpdates();
@@ -58,10 +67,19 @@ export class MediaController {
         this.updateMediaMetadata(this.selectedSong);
       }
     };
+    this.audio.onplaying = () => this.failedInARow = 0;
     this.audio.onpause = () => {
       this.isPlaying = false;
       this.stopPositionUpdates();
       this.updatePlaybackState();
+      this.savePosition();
+    };
+    this.audio.onloadedmetadata = () => {
+      if (this.resumeAt && this.resumeAt < this.audio.duration - 5) {
+        this.audio.currentTime = this.resumeAt;
+      }
+      this.resumeAt = 0;
+      this.emitPosition();
     };
     this.audio.ontimeupdate = () => {
       if (this.audio.currentTime >= PLAY_LOG_SECONDS) {
@@ -73,11 +91,18 @@ export class MediaController {
       this.stopPositionUpdates();
       this.handleEnded();
     };
+    this.audio.onerror = () => this.handleError();
+
+    this.setUpMediaSession();
   }
 
   /** load + play a song */
   play(song: Song) {
+    if (this.shuffle && this.selectedSong && this.selectedSong.id != song.id) {
+      this.shuffleHistory.push(this.selectedSong);
+    }
     this.prepare(song);
+    this.wantsToPlay = true;
     this.library.addRecent(song);
     // Browsers refuse to start audio without a tap first; the play button still works then.
     this.audio.play().catch(() => this.isPlaying = false);
@@ -87,91 +112,148 @@ export class MediaController {
   prepare(song: Song) {
     this.selectedSong = song;
     this.playLogged = false;
+    this.wantsToPlay = false;
     this.audio.src = this.offline.playbackUrl(song);
     this.audio.load();
     this.positionUpdated$.next({currentPos: 0, maxPos: 0});
-
     this.isInitialized = true;
-    this.selectedSongChanged$.next(song);
 
-    localStorage.setItem(this.selectedSongKey, JSON.stringify(song));
-    localStorage.setItem(this.selectedPlaylistKey, JSON.stringify(this.playList));
+    this.store.set(SONG_KEY, song);
+    this.store.set(PLAYLIST_KEY, this.playList);
   }
 
   pause() {
     this.audio.pause();
-    this.updatePlaybackState();
   }
 
   resume() {
-    this.audio.play();
-    this.updatePlaybackState();
+    this.wantsToPlay = true;
+    this.audio.play().catch(() => this.isPlaying = false);
   }
 
-  stop() {
-    this.audio.pause();
-    this.audio.currentTime = 0;
-    this.isPlaying = false;
-    this.updatePlaybackState();
+  togglePlay() {
+    this.isPlaying ? this.pause() : this.resume();
   }
 
-  /** user scrubbed the seek bar */
+  /** The next song: in order, shuffled, or back to the start with repeat-all. */
+  next() {
+    const song = this.upNext(true);
+    if (song) {
+      this.play(song);
+    }
+  }
+
+  /** Restarts the song if it has been playing a while, otherwise goes to the one before. */
+  previous() {
+    if (this.audio.currentTime > RESTART_SECONDS || !this.selectedSong) {
+      this.seekTo(0);
+      return;
+    }
+    const song = this.shuffle ? this.shuffleHistory.pop() : this.playList[this.currentIndex - 1];
+    if (song) {
+      const history = this.shuffleHistory;
+      this.play(song);
+      this.shuffleHistory = history; // going back must not add to the history
+    } else {
+      this.seekTo(0);
+    }
+  }
+
   seekTo(seconds: number) {
     if (this.audio.duration) {
       this.audio.currentTime = seconds;
     }
-
-    this.positionUpdated$.next({
-      currentPos: seconds,
-      maxPos: this.audio.duration || 0
-    });
-
-    this.updatePositionState();
-  }
-
-  /** repeat logic */
-  getRepeatType(): RepeatType {
-    return this.repeatType;
+    this.emitPosition();
   }
 
   changeRepeatType(): RepeatType {
     if (this.repeatType === 'repeat') this.repeatType = 'repeat_one';
     else if (this.repeatType === 'repeat_one') this.repeatType = 'repeat_on';
     else this.repeatType = 'repeat';
-
-    this.cacheRepeatType(this.repeatType);
+    this.store.set(REPEAT_KEY, this.repeatType);
     return this.repeatType;
   }
 
-  unveilLastSong() {
-    const songString = localStorage.getItem(this.selectedSongKey);
-    if (songString) {
-      const song = JSON.parse(songString) as Song;
-      this.selectedSong = song;
-      this.playList = JSON.parse(localStorage.getItem(this.selectedPlaylistKey) ?? '[]') as Song[];
-      this.prepare(song);
-      return true;
+  toggleShuffle() {
+    this.shuffle = !this.shuffle;
+    this.shuffleHistory = [];
+    this.store.set(SHUFFLE_KEY, this.shuffle);
+  }
+
+  /** `minutes`, or 'end' for the end of this song, or nothing to cancel. */
+  setSleepTimer(choice?: number | 'end') {
+    clearTimeout(this.sleepTimeout);
+    if (choice === undefined) {
+      this.sleepTimer = undefined;
+    } else if (choice === 'end') {
+      this.sleepTimer = {endOfSong: true};
+    } else {
+      this.sleepTimer = {minutes: choice, endsAt: Date.now() + choice * 60_000};
+      this.sleepTimeout = setTimeout(() => {
+        this.sleepTimer = undefined;
+        this.pause();
+      }, choice * 60_000);
     }
-    return false;
   }
 
-  loadRepeatMode() {
-    this.repeatType = (localStorage.getItem(this.repeatTypeKey) as RepeatType) || 'repeat';
+  /** Restores the last song, paused where it was left. */
+  unveilLastSong() {
+    const song = this.store.get<Song | null>(SONG_KEY, null);
+    if (!song) {
+      return;
+    }
+    this.playList = this.store.get<Song[]>(PLAYLIST_KEY, []);
+    const saved = this.store.get<{id: string, time: number} | null>(POSITION_KEY, null);
+    this.prepare(song);
+    this.resumeAt = saved?.id == song.id ? saved.time : 0;
   }
 
-  cacheRepeatType(repeatType: RepeatType) {
-    localStorage.setItem(this.repeatTypeKey, repeatType);
+  private upNext(manual: boolean): Song | undefined {
+    const list = this.playList;
+    if (!list.length) {
+      return undefined;
+    }
+    if (this.shuffle && list.length > 1) {
+      const others = list.filter(song => song.id != this.selectedSong?.id);
+      return others[Math.floor(Math.random() * others.length)];
+    }
+    const next = list[this.currentIndex + 1];
+    // At the end of the list, wrap around with repeat-all or when skipped by hand.
+    return next ?? (this.repeatType === 'repeat_on' || manual ? list[0] : undefined);
   }
 
-  /** handle end of song */
   private handleEnded() {
+    if (this.sleepTimer && 'endOfSong' in this.sleepTimer) {
+      this.sleepTimer = undefined;
+      this.isPlaying = false;
+      return;
+    }
     if (this.repeatType === 'repeat_one' && this.selectedSong) {
       this.play(this.selectedSong);
-    } else if (this.repeatType === 'repeat_on') {
-      const next = this.playList[(this.currentIndex + 1) % this.playList.length];
+      return;
+    }
+    // Without repeat the list plays through once (it used to stop after every song).
+    const next = this.upNext(false);
+    if (next) {
       this.play(next);
     } else {
-      this.stop();
+      this.audio.currentTime = 0;
+      this.isPlaying = false;
+      this.emitPosition();
+    }
+  }
+
+  private handleError() {
+    if (!this.wantsToPlay || !this.selectedSong) {
+      return; // a restored song that can't load yet; the play button will try again
+    }
+    this.isPlaying = false;
+    this.failedInARow++;
+    const offline = !navigator.onLine && !this.offline.isDownloaded(this.selectedSong.id);
+    this.notice.show(offline ? 'ეს სიმღერა ინტერნეტის გარეშე არ ისმება' : `„${this.selectedSong.name}“ ვერ ჩაირთო`);
+    // Skip to the next one, unless every song in the list has failed in a row.
+    if (this.failedInARow < this.playList.length) {
+      setTimeout(() => this.next(), 1500);
     }
   }
 
@@ -184,62 +266,81 @@ export class MediaController {
     this.songsService.logPlay(song.id).subscribe({error: () => {}});
   }
 
+  private savePosition() {
+    if (this.selectedSong) {
+      this.store.set(POSITION_KEY, {id: this.selectedSong.id, time: Math.floor(this.audio.currentTime)});
+    }
+  }
+
+  private emitPosition() {
+    this.positionUpdated$.next({currentPos: this.audio.currentTime || 0, maxPos: this.audio.duration || 0});
+    this.updatePositionState();
+  }
+
   private startPositionUpdates() {
     this.stopPositionUpdates();
+    let ticks = 0;
     this.positionTimer = setInterval(() => {
-      this.positionUpdated$.next({
-        currentPos: this.audio.currentTime,
-        maxPos: this.audio.duration || 0
-      });
-      this.updatePositionState();
+      this.emitPosition();
+      if (++ticks % 10 == 0) {
+        this.savePosition(); // every 5s, so a closed app reopens near where it was
+      }
     }, 500);
   }
 
   private stopPositionUpdates() {
-    if (this.positionTimer) {
-      clearInterval(this.positionTimer);
-      this.positionTimer = undefined;
+    clearInterval(this.positionTimer);
+    this.positionTimer = undefined;
+  }
+
+  /** Lock screen, notification and headset controls. */
+  private setUpMediaSession() {
+    if (!('mediaSession' in navigator)) {
+      return;
+    }
+    const session = navigator.mediaSession;
+    session.setActionHandler('play', () => this.resume());
+    session.setActionHandler('pause', () => this.pause());
+    session.setActionHandler('previoustrack', () => this.previous());
+    session.setActionHandler('nexttrack', () => this.next());
+    try {
+      session.setActionHandler('seekto', details => this.seekTo(details.seekTime ?? 0));
+    } catch {
+      // Older browsers don't support seeking from the lock screen.
     }
   }
 
-  /** Update metadata (shown on lock screen / car / etc.) */
   private updateMediaMetadata(song: Song) {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: song.name,
         artist: song.artistName || '',
-        // @ts-ignore
-        album: song['albumName'] || '',
+        album: 'FolkApp',
         artwork: [
-          {
-            // @ts-ignore
-            src: song['coverPath'] || 'assets/default-cover.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
+          {src: new URL('icons/icon-192.png', document.baseURI).href, sizes: '192x192', type: 'image/png'},
+          {src: new URL('icons/icon-512.png', document.baseURI).href, sizes: '512x512', type: 'image/png'}
         ]
       });
     }
   }
 
-  /** Sync current playback state */
   private updatePlaybackState() {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.playbackState = this.isPlaying ? 'playing' : 'paused';
     }
   }
 
-  /** Sync progress bar in system media UI (Android lock screen, etc.) */
+  /** Progress bar on the lock screen and in the notification. */
   private updatePositionState() {
-    if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+    if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession && this.audio.duration) {
       try {
         navigator.mediaSession.setPositionState({
-          duration: this.audio.duration || 0,
+          duration: this.audio.duration,
           playbackRate: 1.0,
-          position: this.audio.currentTime || 0
+          position: Math.min(this.audio.currentTime || 0, this.audio.duration)
         });
       } catch {
-        // Some browsers may not support setPositionState
+        // Some browsers don't support setPositionState.
       }
     }
   }

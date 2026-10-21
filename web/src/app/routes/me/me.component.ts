@@ -41,7 +41,6 @@ export class MeComponent implements OnInit {
   /** Plays `song` with `list` as what comes next. */
   play(list: Song[], song = list[0]) {
     this.mediaController.playList = list;
-    this.mediaController.selectedArtist = undefined;
     this.mediaController.play(song);
   }
 }

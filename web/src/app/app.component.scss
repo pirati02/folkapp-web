@@ -12,6 +12,7 @@
 }
 
 .player-container {
+    position: relative;
     flex: none;
     width: 100%;
 
@@ -38,4 +39,22 @@
     color: #fff;
     font-size: 12px;
     text-align: center;
+}
+
+.notice {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    z-index: 400; // also over the full-screen player
+    transform: translateX(-50%);
+    max-width: calc(100vw - 32px);
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: #323232;
+    color: #fff;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
 }

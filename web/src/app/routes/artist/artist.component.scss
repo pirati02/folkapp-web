@@ -17,11 +17,13 @@
 }
 
 .sort-row {
+  flex-wrap: wrap;
   gap: 8px;
   padding: 12px 16px 0;
 }
 
 .chip {
+  white-space: nowrap;
   padding: 6px 12px;
   border: 1px solid #d6d0b8;
   border-radius: 16px;

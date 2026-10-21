@@ -7,7 +7,6 @@ import {SearchResult} from "../../models/search";
 import {Artist} from "../../models/artist";
 import {Song} from "../../models/song";
 import {MediaController} from "../../services/media.controller";
-import {ArtistsService} from "../../services/artists.service";
 import {BottomBarService, mainNavItems} from "../../services/bottom-bar.service";
 import {LocalStore} from "../../services/local-store.service";
 import {NavigationHistory} from "../../services/navigation-history.service";
@@ -41,7 +40,6 @@ export class SearchComponent implements OnInit {
     protected history: NavigationHistory,
     private route: ActivatedRoute,
     private searchService: SearchService,
-    private artistService: ArtistsService,
     private bottomBarService: BottomBarService,
     private store: LocalStore,
     private destroyRef: DestroyRef
@@ -123,8 +121,6 @@ export class SearchComponent implements OnInit {
   selectSong(song: Song) {
     this.rememberTerm();
     this.mediaController.playList = this.result?.songs ?? [song];
-    this.artistService.artistById(song.artistId)
-      .subscribe(artist => this.mediaController.selectedArtist = artist);
     this.mediaController.play(song);
   }
 

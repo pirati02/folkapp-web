@@ -4,13 +4,12 @@
   </div>
   <div class="content">
     <router-outlet></router-outlet>
-    <app-queue *ngIf="queueOpen" (closed)="queueOpen = false"></app-queue>
+    <app-queue *ngIf="playerView.view === 'queue'" (closed)="playerView.close()"></app-queue>
   </div>
   <div class="player-container">
-    <app-media-player [queueOpen]="queueOpen" (queueToggled)="queueOpen = !queueOpen">
-    </app-media-player>
-
-    <app-bottom-bar>
-    </app-bottom-bar>
+    <div class="notice" *ngIf="notice.message" role="status">{{ notice.message }}</div>
+    <app-media-player></app-media-player>
+    <app-bottom-bar></app-bottom-bar>
   </div>
 </div>
+<app-full-player *ngIf="playerView.view === 'full'"></app-full-player>

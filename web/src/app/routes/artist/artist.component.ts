@@ -90,7 +90,6 @@ export class ArtistComponent implements OnInit {
 
     selectSong(song: Song) {
         this.mediaController.playList = this.visibleSongs;
-        this.mediaController.selectedArtist = this.artist;
         this.mediaController.play(song);
     }
 
@@ -116,7 +115,6 @@ export class ArtistComponent implements OnInit {
                 if (shared && shared.id != current?.id) {
                     // Opened from a shared link: ready to play, but browsers only start audio after a tap.
                     this.mediaController.playList = this.visibleSongs;
-                    this.mediaController.selectedArtist = artist;
                     this.mediaController.prepare(shared);
                 }
                 if (focus) {
