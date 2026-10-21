@@ -25,9 +25,36 @@ it('serves the day’s picks and the holidays of the next two weeks', async () =
     },
   ]);
 
-  // Past holidays and ones more than two weeks away are left out.
-  expect((await dashboard('2026-10-15')).holidays).toEqual([]);
-  expect((await dashboard('2026-09-29')).holidays).toEqual([]);
+  // Past holidays and ones more than two weeks away are left out; a quiet fortnight shows the next feast.
+  expect((await dashboard('2026-10-15')).holidays).toEqual([expect.objectContaining({ title: 'გიორგობა', date: '2026-11-23' })]);
+  expect((await dashboard('2026-09-29')).holidays).toEqual([expect.objectContaining({ title: 'სვეტიცხოვლობა', date: '2026-10-14' })]);
+});
+
+it('adds church feasts with the chants matching them', async () => {
+  await ctx.db.query(
+    `INSERT INTO media."Song" ("Id", "ArtistId", "SongType", "Name", "Path") VALUES
+      (gen_random_uuid(), $1, 2, 'ქრისტე აღსდგა', 'x.mp3'),
+      (gen_random_uuid(), $1, 1, 'ჭონა ალილო', 'y.mp3'),
+      (gen_random_uuid(), $1, 1, 'კახური ალილო', 'z.mp3')`,
+    [ids.rustavi],
+  );
+
+  // Orthodox Easter 2026 is on 12 April, Palm Sunday a week before.
+  const spring = await dashboard('2026-04-05');
+  expect(spring.holidays.map((holiday: { title: string; date: string }) => `${holiday.date} ${holiday.title}`)).toEqual([
+    '2026-04-05 ბზობა',
+    '2026-04-07 ხარება',
+    '2026-04-10 წითელი პარასკევი',
+    '2026-04-12 აღდგომა',
+  ]);
+  const easter = spring.holidays.find((holiday: { title: string }) => holiday.title === 'აღდგომა');
+  expect(easter).toMatchObject({ id: 'easter-2026-04-12', imagePath: null });
+  expect(easter.songs.map((song: { name: string }) => song.name)).toEqual(['ქრისტე აღსდგა', 'ჭონა ალილო']);
+
+  // Christmas takes ალილო carols, but not the Easter ჭონა ალილო; the window crosses into January.
+  const christmas = (await dashboard('2026-12-30')).holidays.find((holiday: { title: string }) => holiday.title === 'შობა');
+  expect(christmas.date).toBe('2027-01-07');
+  expect(christmas.songs.map((song: { name: string }) => song.name)).toEqual(['კახური ალილო']);
 });
 
 it('keeps the picks for a whole day and changes them between days', async () => {

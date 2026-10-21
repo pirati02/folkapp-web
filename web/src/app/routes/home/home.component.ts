@@ -32,6 +32,9 @@ export class HomeComponent implements OnInit {
   dashboard?: Dashboard;
   picks: Pick[] = [];
   popular: Song[] = [];
+  /** A feast shows this many of its songs until "all" is tapped. */
+  readonly FEAST_PREVIEW = 5;
+  expanded = new Set<string>();
 
   constructor(
     public mediaController: MediaController,

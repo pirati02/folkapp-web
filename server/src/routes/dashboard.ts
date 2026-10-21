@@ -4,6 +4,7 @@ import type { RouteDeps } from '../app.js';
 import { HttpError, ok, parse, uuidParam } from '../http.js';
 import { SONG_COLUMNS, SONGS_WITH_ARTIST, SongType, toSong, type SongRow } from '../media.js';
 import { sendFile } from '../storage/types.js';
+import { feastsBetween, type Feast } from '../church-calendar.js';
 
 /** Accepts `2024-05-10` as well as full ISO timestamps. */
 const dashboardQuery = z.object({
@@ -18,6 +19,8 @@ const dashboardQuery = z.object({
 const DAILY_PICK_POOL = 50;
 /** How far ahead the home page lists holidays. */
 const HOLIDAY_DAYS_AHEAD = 14;
+/** At most this many matching songs are listed under a feast. */
+const FEAST_SONG_LIMIT = 30;
 
 export function dashboardRoutes(app: FastifyInstance, { db, storage, links }: RouteDeps) {
   app.get('/dashboard', async (request) => {
@@ -63,20 +66,51 @@ export function dashboardRoutes(app: FastifyInstance, { db, storage, links }: Ro
     const songLinks = links(request);
     const song = (row: SongRow | undefined) => (row ? toSong(row, songLinks) : null);
 
+    // Computed church feasts, unless the holiday table already has that feast on that day.
+    const entered = new Set(holidays.rows.map((holiday) => holiday.date + holiday.title));
+    let feasts = feastsBetween(day, HOLIDAY_DAYS_AHEAD).filter((feast) => !entered.has(feast.date + feast.title));
+    if (!feasts.length && !holidays.rows.length) {
+      // A quiet fortnight: still show what comes next.
+      feasts = feastsBetween(day, 366).slice(0, 1);
+    }
+    const feastItems = await Promise.all(
+      feasts.map(async (feast) => ({
+        id: `${feast.key}-${feast.date}`,
+        title: feast.title,
+        date: feast.date,
+        imagePath: null,
+        songs: (await songsForFeast(feast)).rows.map((row) => toSong(row, songLinks)),
+      })),
+    );
+
     return ok({
       date: day,
       daySong: song(daySong.rows[0]),
       dayChant: song(dayChant.rows[0]),
       discoverSong: song(discoverSong.rows[0]),
-      holidays: holidays.rows.map((holiday) => ({
-        ...holiday,
-        imagePath: songLinks.holidayImage(holiday.id),
-        songs: holidaySongs.rows
-          .filter((row) => row.holidayId === holiday.id)
-          .map(({ holidayId: _, ...row }) => toSong(row, songLinks)),
-      })),
+      holidays: [
+        ...holidays.rows.map((holiday) => ({
+          ...holiday,
+          imagePath: songLinks.holidayImage(holiday.id) as string | null,
+          songs: holidaySongs.rows
+            .filter((row) => row.holidayId === holiday.id)
+            .map(({ holidayId: _, ...row }) => toSong(row, songLinks)),
+        })),
+        ...feastItems,
+      ].sort((a, b) => a.date.localeCompare(b.date)),
     });
   });
+
+  /** Chants first, then songs, whose names match the feast's fragments. */
+  function songsForFeast({ songs }: Feast) {
+    const patterns = (words: string[] = []) => words.map((word) => `%${word}%`);
+    return db.query<SongRow>(
+      `SELECT ${SONG_COLUMNS} FROM ${SONGS_WITH_ARTIST}
+       WHERE s."Name" ILIKE ANY($1::text[]) AND NOT (s."Name" ILIKE ANY($2::text[]))
+       ORDER BY s."SongType" DESC, s."Name" LIMIT ${FEAST_SONG_LIMIT}`,
+      [patterns(songs.include), patterns(songs.exclude)],
+    );
+  }
 
   app.get<{ Params: { id: string } }>('/holidays/:id/image', async (request, reply) => {
     const id = uuidParam(request.params.id);

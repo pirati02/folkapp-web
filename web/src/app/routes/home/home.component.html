@@ -26,7 +26,7 @@
         <div class="holiday-head">
           <div class="holiday-image">
             <mat-icon>event</mat-icon>
-            <img [src]="holiday.imagePath" alt="" loading="lazy" (error)="hideImage($event)">
+            <img *ngIf="holiday.imagePath" [src]="holiday.imagePath" alt="" loading="lazy" (error)="hideImage($event)">
           </div>
           <div class="holiday-text">
             <span class="holiday-date">{{ dayLabel(holiday) }}</span>
@@ -37,8 +37,11 @@
             <mat-icon>play_circle</mat-icon>
           </button>
         </div>
-        <app-song-list [songs]="holiday.songs" [showArtist]="true" [activeId]="mediaController.selectedSong?.id"
+        <app-song-list [songs]="expanded.has(holiday.id) ? holiday.songs : holiday.songs.slice(0, FEAST_PREVIEW)"
+                       [showArtist]="true" [activeId]="mediaController.selectedSong?.id"
                        (songSelected)="play(holiday.songs, $event)"></app-song-list>
+        <button class="more-button" *ngIf="holiday.songs.length > FEAST_PREVIEW && !expanded.has(holiday.id)"
+                (click)="expanded.add(holiday.id)">ყველა ({{ holiday.songs.length }})</button>
       </div>
     </section>
 
