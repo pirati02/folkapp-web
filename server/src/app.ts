@@ -7,6 +7,7 @@ import { artistRoutes } from './routes/artists.js';
 import { dashboardRoutes } from './routes/dashboard.js';
 import { searchRoutes } from './routes/search.js';
 import { shareRoutes } from './routes/share.js';
+import { statsRoutes } from './routes/stats.js';
 import { songRoutes } from './routes/songs.js';
 import type { Storage } from './storage/types.js';
 import type { UrlShortener } from './url-shortener.js';
@@ -67,6 +68,7 @@ export async function buildApp(deps: AppDeps, logger: FastifyServerOptions['logg
   searchRoutes(app, routeDeps);
   dashboardRoutes(app, routeDeps);
   shareRoutes(app, routeDeps);
+  statsRoutes(app, routeDeps);
 
   return app;
 }

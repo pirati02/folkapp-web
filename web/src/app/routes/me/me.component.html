@@ -38,5 +38,7 @@
                      (songSelected)="play(recent, $event)"></app-song-list>
       <p class="empty-text" *ngIf="!recent.length">მოსმენილი სიმღერები აქ გამოჩნდება.</p>
     </section>
+
+    <a class="stats-link" routerLink="/stats"><mat-icon>bar_chart</mat-icon>სტატისტიკა</a>
   </div>
 </div>

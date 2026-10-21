@@ -1,6 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {MatIconModule} from "@angular/material/icon";
+import {RouterLink} from "@angular/router";
 import {Song} from "../../models/song";
 import {MediaController} from "../../services/media.controller";
 import {LibraryService} from "../../services/library.service";
@@ -15,7 +16,7 @@ import {map, Observable} from "rxjs";
   templateUrl: './me.component.html',
   styleUrls: ['./me.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatIconModule, SongListComponent]
+  imports: [CommonModule, MatIconModule, RouterLink, SongListComponent]
 })
 export class MeComponent implements OnInit {
   downloadedSongs$: Observable<Song[]>;

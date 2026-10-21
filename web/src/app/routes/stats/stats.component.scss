@@ -1,0 +1,129 @@
+@import '../../../variables';
+
+.close-button {
+  display: flex;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.header-title {
+  flex: 1;
+  padding-right: 24px; // balances the close button so the title is centred
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+  padding: 16px 16px 0;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: $skin;
+}
+
+.tile-value {
+  font-size: 20px;
+  color: #000;
+}
+
+.tile-label {
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+.note {
+  margin: 8px 16px 0;
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+.section-title {
+  margin: 18px 16px 4px;
+  font-size: 13px;
+  font-weight: normal;
+  color: #6b6b6b;
+}
+
+.empty {
+  margin: 4px 16px;
+  font-size: 14px;
+  color: #6b6b6b;
+}
+
+.ranking {
+  margin: 0;
+  padding: 0 16px 8px;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22% 40px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  border-bottom: 1px solid #eee;
+  background: none;
+  color: #000;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+
+  &.is-active .row-name {
+    color: $choco;
+  }
+}
+
+.row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.row-name,
+.row-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-name {
+  font-size: 15px;
+}
+
+.row-sub {
+  font-size: 11px;
+  color: #6b6b6b;
+}
+
+.bar-track {
+  display: block;
+  height: 8px;
+}
+
+// One measure, one hue: bar length is the value, anchored at the left, rounded at its end.
+.bar {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: 0 4px 4px 0;
+  background: $choco;
+}
+
+.row-value {
+  font-size: 13px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #333;
+}

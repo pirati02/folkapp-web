@@ -1,0 +1,84 @@
+<div class="tab-list-footer-page">
+  <div class="header d-flex">
+    <button class="close-button" (click)="history.back('/me')" aria-label="დახურვა">
+      <mat-icon>close</mat-icon>
+    </button>
+    <span class="header-title">სტატისტიკა</span>
+  </div>
+
+  <div class="page-body" *ngIf="stats as stats">
+    <div class="tiles">
+      <div class="tile"><span class="tile-value">{{ stats.totals.plays | number }}</span><span class="tile-label">მოსმენა</span></div>
+      <div class="tile"><span class="tile-value">{{ stats.totals.downloads | number }}</span><span class="tile-label">გადმოწერა</span></div>
+      <div class="tile"><span class="tile-value">{{ stats.totals.songs | number }}</span><span class="tile-label">სიმღერა</span></div>
+      <div class="tile"><span class="tile-value">{{ stats.totals.chants | number }}</span><span class="tile-label">საგალობელი</span></div>
+      <div class="tile"><span class="tile-value">{{ stats.totals.artists | number }}</span><span class="tile-label">ანსამბლი</span></div>
+    </div>
+    <p class="note">მოსმენა ითვლება, როცა სიმღერა 30 წამზე მეტხანს ისმის.</p>
+
+    <section>
+      <h3 class="section-title">ყველაზე მოსმენილი სიმღერები</h3>
+      <p class="empty" *ngIf="!stats.topPlayed.length">ჯერ არაფერია დათვლილი.</p>
+      <ol class="ranking">
+        <li *ngFor="let song of stats.topPlayed">
+          <button class="row" (click)="play(stats.topPlayed, song)"
+                  [class.is-active]="song.id === mediaController.selectedSong?.id"
+                  [title]="song.name + ' — ' + song.plays + ' მოსმენა'">
+            <span class="row-text">
+              <span class="row-name">{{ song.name }}</span>
+              <span class="row-sub">{{ song.artistName }}</span>
+            </span>
+            <span class="bar-track" aria-hidden="true">
+              <span class="bar" [style.width.%]="width(song.plays, stats.topPlayed, 'plays')"></span>
+            </span>
+            <span class="row-value">{{ song.plays | number }}</span>
+          </button>
+        </li>
+      </ol>
+    </section>
+
+    <section *ngIf="stats.artists.length">
+      <h3 class="section-title">ყველაზე მოსმენილი ანსამბლები</h3>
+      <ol class="ranking">
+        <li *ngFor="let artist of stats.artists">
+          <a class="row" [routerLink]="['/artist', artist.id]" [title]="artist.name + ' — ' + artist.plays + ' მოსმენა'">
+            <span class="row-text">
+              <span class="row-name">{{ artist.name }}</span>
+              <span class="row-sub">{{ artist.songs }} ჩანაწერი · {{ artist.downloads | number }} გადმოწერა</span>
+            </span>
+            <span class="bar-track" aria-hidden="true">
+              <span class="bar" [style.width.%]="width(artist.plays, stats.artists, 'plays')"></span>
+            </span>
+            <span class="row-value">{{ artist.plays | number }}</span>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section *ngIf="stats.topDownloaded.length">
+      <h3 class="section-title">ყველაზე გადმოწერილი</h3>
+      <ol class="ranking">
+        <li *ngFor="let song of stats.topDownloaded">
+          <button class="row" (click)="play(stats.topDownloaded, song)"
+                  [title]="song.name + ' — ' + song.downloads + ' გადმოწერა'">
+            <span class="row-text">
+              <span class="row-name">{{ song.name }}</span>
+              <span class="row-sub">{{ song.artistName }}</span>
+            </span>
+            <span class="bar-track" aria-hidden="true">
+              <span class="bar" [style.width.%]="width(song.downloads, stats.topDownloaded, 'downloads')"></span>
+            </span>
+            <span class="row-value">{{ song.downloads | number }}</span>
+          </button>
+        </li>
+      </ol>
+    </section>
+  </div>
+
+  <div class="spinner-row d-flex justify-content-center align-items-center" *ngIf="!stats && !failed">
+    <mat-progress-spinner mode="indeterminate" [strokeWidth]="7" [diameter]="40"></mat-progress-spinner>
+  </div>
+  <div class="spinner-row d-flex justify-content-center align-items-center" *ngIf="failed">
+    <h4>ჩატვირთვა ვერ მოხერხდა</h4>
+  </div>
+</div>

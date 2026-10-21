@@ -36,3 +36,13 @@ section {
   line-height: 1.5;
   color: #6b6b6b;
 }
+
+.stats-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 16px;
+  color: $choco;
+  font-size: 14px;
+  text-decoration: none;
+}
