@@ -23,6 +23,17 @@
               [attr.aria-label]="library.isFavorite(song.id) ? 'რჩეულებიდან ამოღება' : 'რჩეულებში დამატება'">
         <mat-icon>{{ library.isFavorite(song.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
       </button>
+      <ng-container *ngIf="mediaController.selectedSong as song">
+        <button class="action-button" *ngIf="offline.supported" (click)="toggleDownload(song)"
+                [attr.aria-label]="offline.isDownloaded(song.id) ? 'მოწყობილობიდან წაშლა' : 'გადმოწერა'">
+          <ng-container *ngIf="offline.active$ | async as active">
+            <span class="progress" *ngIf="(active[song.id] ?? -2) >= 0; else icon">{{ active[song.id] * 100 | number: '1.0-0' }}%</span>
+            <ng-template #icon>
+              <mat-icon>{{ offline.isDownloaded(song.id) ? 'download_done' : (active[song.id] === -1 ? 'downloading' : 'download') }}</mat-icon>
+            </ng-template>
+          </ng-container>
+        </button>
+      </ng-container>
       <button class="action-button" [disabled]="!mediaController.isInitialized" (click)="changeRepeatType()">
         <mat-icon>{{ repeatType }}</mat-icon>
       </button>

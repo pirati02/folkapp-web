@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {Component} from '@angular/core';
+import {Component, HostListener} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MediaController } from './services/media.controller';
 import { MediaPlayerComponent } from './widgets/media-player/media-player.component';
@@ -14,6 +14,12 @@ import { NavigationHistory } from './services/navigation-history.service';
   imports: [CommonModule, RouterOutlet, MediaPlayerComponent, BottomBarComponent]
 })
 export class AppComponent {
+  online = navigator.onLine;
+
+  @HostListener('window:online') @HostListener('window:offline')
+  updateOnline() {
+    this.online = navigator.onLine;
+  }
 
   constructor(
     public mediaController: MediaController,

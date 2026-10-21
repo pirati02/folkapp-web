@@ -60,3 +60,10 @@
   text-overflow: ellipsis;
   pointer-events: none;
 }
+
+.progress {
+  display: inline-block;
+  min-width: 24px;
+  font-size: 11px;
+  text-align: center;
+}

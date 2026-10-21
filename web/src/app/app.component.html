@@ -1,4 +1,7 @@
 <div class="app-shell d-flex flex-column">
+  <div class="offline-banner" *ngIf="!online" role="status">
+    ინტერნეტი არ არის — ისმება გადმოწერილი სიმღერები
+  </div>
   <div class="content">
     <router-outlet></router-outlet>
   </div>

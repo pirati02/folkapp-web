@@ -66,3 +66,18 @@ mark {
     color: $choco;
   }
 }
+
+.song-saved {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+  font-size: 11px;
+  color: $choco;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}

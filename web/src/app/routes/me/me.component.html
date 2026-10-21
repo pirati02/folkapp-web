@@ -16,6 +16,19 @@
       </p>
     </section>
 
+    <section *ngIf="offline.supported && (downloadedSongs$ | async) as downloaded">
+      <div class="section-title d-flex">
+        <span>გადმოწერილი<ng-container *ngIf="downloaded.length"> · {{ downloadedSize$ | async }}</ng-container></span>
+        <button class="text-button" *ngIf="downloaded.length" (click)="offline.removeAll()">ყველას წაშლა</button>
+      </div>
+      <app-song-list [songs]="downloaded" [showArtist]="true" [activeId]="mediaController.selectedSong?.id"
+                     (songSelected)="play(downloaded, $event)"></app-song-list>
+      <p class="empty-text" *ngIf="!downloaded.length">
+        გადმოწერილი სიმღერები ინტერნეტის გარეშეც ისმება. გადმოწერე დამკვრელიდან <mat-icon inline>download</mat-icon>
+        ან ანსამბლის გვერდიდან.
+      </p>
+    </section>
+
     <section *ngIf="library.recent$ | async as recent">
       <div class="section-title d-flex">
         <span>ბოლოს მოსმენილი</span>

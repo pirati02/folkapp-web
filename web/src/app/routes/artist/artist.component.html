@@ -9,9 +9,12 @@
   </div>
 
   <div class="page-body" *ngIf="!loading">
-    <div class="sort-row d-flex" *ngIf="visibleSongs.length > 1">
+    <div class="sort-row d-flex" *ngIf="visibleSongs.length">
       <button class="chip" [class.is-on]="sort === 'name'" (click)="changeSort('name')">ა–ჰ</button>
       <button class="chip" [class.is-on]="sort === 'popular'" (click)="changeSort('popular')">პოპულარული</button>
+      <button class="chip download-chip" *ngIf="offline.supported" (click)="downloadAll()">
+        <mat-icon>download</mat-icon>{{ downloadLabel }}
+      </button>
     </div>
     <app-song-list [songs]="visibleSongs" [activeId]="mediaController.selectedSong?.id"
                    (songSelected)="selectSong($event)"></app-song-list>

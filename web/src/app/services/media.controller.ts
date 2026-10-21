@@ -5,6 +5,7 @@ import {Song} from '../models/song';
 import {Artist} from '../models/artist';
 import {SongsService} from './songs.service';
 import {LibraryService} from './library.service';
+import {OfflineService} from './offline.service';
 
 /** A play is counted once this much of a song has been heard, so skipped songs don't count. */
 const PLAY_LOG_SECONDS = 30;
@@ -44,7 +45,11 @@ export class MediaController {
     return this.audio.currentTime || 0;
   }
 
-  constructor(private songsService: SongsService, private library: LibraryService) {
+  constructor(
+    private songsService: SongsService,
+    private library: LibraryService,
+    private offline: OfflineService
+  ) {
     this.audio.onplay = () => {
       this.isPlaying = true;
       this.startPositionUpdates();
@@ -82,7 +87,7 @@ export class MediaController {
   prepare(song: Song) {
     this.selectedSong = song;
     this.playLogged = false;
-    this.audio.src = song.path;
+    this.audio.src = this.offline.playbackUrl(song);
     this.audio.load();
     this.positionUpdated$.next({currentPos: 0, maxPos: 0});
 

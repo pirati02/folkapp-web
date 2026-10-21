@@ -7,6 +7,7 @@ import {map, Observable} from 'rxjs';
 import {Song} from '../../models/song';
 import {HighlightPipe} from '../../shared/highlight.pipe';
 import {LibraryService} from '../../services/library.service';
+import {OfflineService} from '../../services/offline.service';
 
 /** A list of songs; the one playing is marked, and `highlight` emphasises a search term. */
 @Component({
@@ -26,8 +27,10 @@ export class SongListComponent {
   @Output() songSelected = new EventEmitter<Song>();
 
   favoriteIds$: Observable<Set<string>>;
+  downloadedIds$: Observable<Set<string>>;
 
-  constructor(private library: LibraryService) {
+  constructor(private library: LibraryService, offline: OfflineService) {
+    this.downloadedIds$ = offline.downloads$.pipe(map(items => new Set(items.map(item => item.song.id))));
     this.favoriteIds$ = library.favorites$.pipe(map(songs => new Set(songs.map(song => song.id))));
   }
 

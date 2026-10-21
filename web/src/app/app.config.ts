@@ -19,7 +19,8 @@ export const appConfig: ApplicationConfig = {
     baseUrlProvider,
     importProvidersFrom(AppModule), provideAnimationsAsync(),
     // Makes the app installable and lets it start offline; only the production build has the worker.
-    provideServiceWorker('ngsw-worker.js', {
+    // public/sw.js wraps ngsw-worker.js and also plays songs saved for offline listening.
+    provideServiceWorker('sw.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000'
     })

@@ -5,6 +5,8 @@ import {MatIconModule} from "@angular/material/icon";
 import {CommonModule} from "@angular/common";
 import {SongsService} from "../../services/songs.service";
 import {LibraryService} from "../../services/library.service";
+import {OfflineService} from "../../services/offline.service";
+import {Song} from "../../models/song";
 
 @Component({
   selector: 'app-media-player',
@@ -23,8 +25,10 @@ export class MediaPlayerComponent implements OnInit {
   constructor(
     public mediaController: MediaController,
     private songsService: SongsService,
-    public library: LibraryService
+    public library: LibraryService,
+    public offline: OfflineService
   ) {
+    offline.messages$.subscribe(message => this.notify(message));
   }
 
   ngOnInit() {
@@ -38,6 +42,15 @@ export class MediaPlayerComponent implements OnInit {
       navigator.mediaSession.setActionHandler('pause', () => this.mediaController.pause());
       navigator.mediaSession.setActionHandler('previoustrack', () => this.playPrevious());
       navigator.mediaSession.setActionHandler('nexttrack', () => this.playNext());
+    }
+  }
+
+  toggleDownload(song: Song) {
+    if (this.offline.isDownloaded(song.id)) {
+      this.offline.remove(song.id).then(() => this.notify('წაიშალა მოწყობილობიდან'));
+    } else if (!this.offline.isPending(song.id)) {
+      this.offline.download(song);
+      this.notify('გადმოიწერება…');
     }
   }
 

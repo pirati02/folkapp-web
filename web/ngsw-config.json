@@ -25,5 +25,23 @@
         "urls": ["https://fonts.googleapis.com/**", "https://fonts.gstatic.com/**"]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "catalog",
+      "urls": [
+        "https://folkapp-web.onrender.com/Artists/**",
+        "https://folkapp-web.onrender.com/artists/**",
+        "https://folkapp-web.onrender.com/songs/*/all*",
+        "https://folkapp-web.onrender.com/songs/popular*",
+        "https://folkapp-web.onrender.com/dashboard*"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "timeout": "5s",
+        "maxSize": 200,
+        "maxAge": "30d"
+      }
+    }
   ]
 }

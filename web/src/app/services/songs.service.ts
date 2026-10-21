@@ -41,6 +41,10 @@ export class SongsService {
     return this.httpClient.put(this.baseUrl + '/songs/' + id + '/log', {logType: 0});
   }
 
+  logDownload(id: string): Observable<unknown> {
+    return this.httpClient.put(this.baseUrl + '/songs/' + id + '/log', {logType: 1});
+  }
+
   share(id: string): Observable<string> {
     return this.httpClient.get<BaseResponse<string>>(this.baseUrl + '/songs/' + id + '/share').pipe(
       map(data => data.body)

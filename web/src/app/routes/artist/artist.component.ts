@@ -6,6 +6,7 @@ import {Song} from "../../models/song";
 import {SongSort, SongsService} from "../../services/songs.service";
 import {NavigationHistory} from "../../services/navigation-history.service";
 import {ArtistType} from "../../models/artist.type";
+import {OfflineService} from "../../services/offline.service";
 import {SongType} from "../../models/song.type";
 import {MediaController} from "../../services/media.controller";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -50,6 +51,7 @@ export class ArtistComponent implements OnInit {
     constructor(
         public router: Router,
         private history: NavigationHistory,
+        public offline: OfflineService,
         public mediaController: MediaController,
         private artistService: ArtistsService,
         private songService: SongsService,
@@ -127,6 +129,23 @@ export class ArtistComponent implements OnInit {
         this.songType = type;
         this.bottomBarItems.forEach(item => item.isSelected = item.id == type);
         this.bottomBarService.setItems([...this.bottomBarItems]);
+    }
+
+    /** Label of the download-all button for the songs shown. */
+    get downloadLabel(): string {
+        const songs = this.visibleSongs;
+        const downloaded = songs.filter(song => this.offline.isDownloaded(song.id)).length;
+        if (downloaded == songs.length) {
+            return 'გადმოწერილია';
+        }
+        if (songs.some(song => this.offline.isPending(song.id))) {
+            return `გადმოიწერება ${downloaded}/${songs.length}`;
+        }
+        return 'ყველას გადმოწერა';
+    }
+
+    downloadAll() {
+        this.offline.downloadAll(this.visibleSongs);
     }
 
     get showEmptyListText(): boolean {

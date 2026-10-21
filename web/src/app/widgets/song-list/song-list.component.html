@@ -1,6 +1,6 @@
-<mat-list class="list songs-list" *ngIf="favoriteIds$ | async as favoriteIds">
+<mat-list class="list songs-list" *ngIf="{favorites: favoriteIds$ | async, downloaded: downloadedIds$ | async} as ids">
   <mat-list-item *ngFor="let song of songs; trackBy: trackById" [attr.id]="'song-' + song.id"
-                 [class.has-artist]="showArtist">
+                 [class.has-artist]="showArtist || ids.downloaded?.has(song.id)">
     <div class="d-flex flex-column">
       <div class="song-row">
         <a (click)="songSelected.emit(song)" class="list-item song-item" [class.is-active]="song.id === activeId">
@@ -11,10 +11,13 @@
             </ng-container>
           </span>
           <span class="song-artist" *ngIf="showArtist">{{ song.artistName }}</span>
+          <span class="song-saved" *ngIf="ids.downloaded?.has(song.id)">
+            <mat-icon>offline_pin</mat-icon>გადმოწერილია
+          </span>
         </a>
-        <button class="row-action" [class.is-on]="favoriteIds.has(song.id)" (click)="toggleFavorite(song, $event)"
-                [attr.aria-label]="favoriteIds.has(song.id) ? 'რჩეულებიდან ამოღება' : 'რჩეულებში დამატება'">
-          <mat-icon>{{ favoriteIds.has(song.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+        <button class="row-action" [class.is-on]="ids.favorites?.has(song.id)" (click)="toggleFavorite(song, $event)"
+                [attr.aria-label]="ids.favorites?.has(song.id) ? 'რჩეულებიდან ამოღება' : 'რჩეულებში დამატება'">
+          <mat-icon>{{ ids.favorites?.has(song.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
         </button>
       </div>
       <mat-divider></mat-divider>
