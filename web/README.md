@@ -14,6 +14,17 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
+## Installable app (PWA)
+
+The production build includes a service worker (`@angular/service-worker`, configured in `ngsw-config.json`)
+and a web manifest (`public/manifest.webmanifest`, icons in `public/icons/`), so browsers offer to install
+it: "Install app" in Chrome/Edge, "Add to Home Screen" from Safari's share menu on iOS. The app shell and
+fonts are cached so it starts offline; API data and audio always come from the network.
+
+The worker only runs in production builds, so `ng serve` doesn't use it. To try it locally, run
+`npm run build` and serve `dist/folkapp-web/browser` over `http://localhost`. A new deploy reaches users
+on the next launch after the worker picks it up.
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).

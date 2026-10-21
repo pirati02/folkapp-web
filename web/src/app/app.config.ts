@@ -1,5 +1,6 @@
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, ValueProvider } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, isDevMode, provideZoneChangeDetection, ValueProvider } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 
 import { routes } from './app.routes';
 import { AppModule } from './app.module';
@@ -16,6 +17,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     baseUrlProvider,
-    importProvidersFrom(AppModule), provideAnimationsAsync()
+    importProvidersFrom(AppModule), provideAnimationsAsync(),
+    // Makes the app installable and lets it start offline; only the production build has the worker.
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ]
 };
