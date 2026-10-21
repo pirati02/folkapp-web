@@ -1,0 +1,29 @@
+<div class="tab-list-footer-page">
+  <div class="header">ჩემი</div>
+
+  <div class="page-body">
+    <section *ngIf="library.favorites$ | async as favorites">
+      <div class="section-title d-flex">
+        <span>რჩეულები</span>
+        <button class="text-button" *ngIf="favorites.length" (click)="play(favorites)">
+          <mat-icon>play_arrow</mat-icon>ყველას მოსმენა
+        </button>
+      </div>
+      <app-song-list [songs]="favorites" [showArtist]="true" [activeId]="mediaController.selectedSong?.id"
+                     (songSelected)="play(favorites, $event)"></app-song-list>
+      <p class="empty-text" *ngIf="!favorites.length">
+        დააჭირე <mat-icon inline>favorite_border</mat-icon>-ს სიმღერის გვერდით და ის აქ გამოჩნდება.
+      </p>
+    </section>
+
+    <section *ngIf="library.recent$ | async as recent">
+      <div class="section-title d-flex">
+        <span>ბოლოს მოსმენილი</span>
+        <button class="text-button" *ngIf="recent.length" (click)="library.clearRecent()">გასუფთავება</button>
+      </div>
+      <app-song-list [songs]="recent" [showArtist]="true" [activeId]="mediaController.selectedSong?.id"
+                     (songSelected)="play(recent, $event)"></app-song-list>
+      <p class="empty-text" *ngIf="!recent.length">მოსმენილი სიმღერები აქ გამოჩნდება.</p>
+    </section>
+  </div>
+</div>

@@ -6,6 +6,7 @@ import {ArtistComponent} from './routes/artist/artist.component';
 import {SearchComponent} from "./routes/search/search.component";
 import {SongsService} from './services/songs.service';
 import {HomeComponent} from './routes/home/home.component';
+import {MeComponent} from './routes/me/me.component';
 
 /** Shared song links land on /song/:id; open the song in its ensemble's list, or home if it's gone. */
 const openSharedSong = (route: ActivatedRouteSnapshot) => {
@@ -37,6 +38,11 @@ export const routes: Routes = [
     title: 'ძიება',
     path: 'search',
     component: SearchComponent
+  },
+  {
+    title: 'ჩემი',
+    path: 'me',
+    component: MeComponent
   },
   {
     path: 'song/:id',

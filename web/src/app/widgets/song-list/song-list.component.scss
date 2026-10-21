@@ -36,3 +36,33 @@ mark {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+.song-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.song-row .song-item {
+  flex: 1;
+}
+
+.row-action {
+  display: flex;
+  flex: none;
+  padding: 8px;
+  border: none;
+  background: none;
+  color: #9a9a9a;
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+
+  &.is-on {
+    color: $choco;
+  }
+}

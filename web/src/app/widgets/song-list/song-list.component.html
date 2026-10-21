@@ -1,16 +1,22 @@
-<mat-list class="list songs-list">
+<mat-list class="list songs-list" *ngIf="favoriteIds$ | async as favoriteIds">
   <mat-list-item *ngFor="let song of songs; trackBy: trackById" [attr.id]="'song-' + song.id"
                  [class.has-artist]="showArtist">
     <div class="d-flex flex-column">
-      <a (click)="songSelected.emit(song)" class="list-item song-item" [class.is-active]="song.id === activeId">
-        <span class="song-name">
-          <ng-container *ngFor="let part of song.name | highlight: highlight">
-            <mark *ngIf="part.match; else plain">{{ part.text }}</mark>
-            <ng-template #plain>{{ part.text }}</ng-template>
-          </ng-container>
-        </span>
-        <span class="song-artist" *ngIf="showArtist">{{ song.artistName }}</span>
-      </a>
+      <div class="song-row">
+        <a (click)="songSelected.emit(song)" class="list-item song-item" [class.is-active]="song.id === activeId">
+          <span class="song-name">
+            <ng-container *ngFor="let part of song.name | highlight: highlight">
+              <mark *ngIf="part.match; else plain">{{ part.text }}</mark>
+              <ng-template #plain>{{ part.text }}</ng-template>
+            </ng-container>
+          </span>
+          <span class="song-artist" *ngIf="showArtist">{{ song.artistName }}</span>
+        </a>
+        <button class="row-action" [class.is-on]="favoriteIds.has(song.id)" (click)="toggleFavorite(song, $event)"
+                [attr.aria-label]="favoriteIds.has(song.id) ? 'რჩეულებიდან ამოღება' : 'რჩეულებში დამატება'">
+          <mat-icon>{{ favoriteIds.has(song.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+        </button>
+      </div>
       <mat-divider></mat-divider>
     </div>
   </mat-list-item>

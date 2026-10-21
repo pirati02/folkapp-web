@@ -4,6 +4,7 @@ import {RepeatType} from "../../models/repeate.type";
 import {MatIconModule} from "@angular/material/icon";
 import {CommonModule} from "@angular/common";
 import {SongsService} from "../../services/songs.service";
+import {LibraryService} from "../../services/library.service";
 
 @Component({
   selector: 'app-media-player',
@@ -21,7 +22,8 @@ export class MediaPlayerComponent implements OnInit {
 
   constructor(
     public mediaController: MediaController,
-    private songsService: SongsService
+    private songsService: SongsService,
+    public library: LibraryService
   ) {
   }
 

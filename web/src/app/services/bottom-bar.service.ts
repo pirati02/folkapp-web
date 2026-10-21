@@ -5,9 +5,11 @@ import { ArtistType } from "../models/artist.type";
 
 /** Bottom-bar id of the home page; the artist lists use their ArtistType. */
 export const NAV_HOME = 0;
+/** Bottom-bar id of the listener's own page (favourites, recently played). */
+export const NAV_ME = 3;
 
 /** The app's main sections; `selectedType` marks the current one (none, e.g. on search). */
-export function mainNavItems(selectedType?: ArtistType | typeof NAV_HOME): BottomBarItem[] {
+export function mainNavItems(selectedType?: ArtistType | typeof NAV_HOME | typeof NAV_ME): BottomBarItem[] {
     return [
         <BottomBarItem>{
             id: NAV_HOME,
@@ -31,6 +33,14 @@ export function mainNavItems(selectedType?: ArtistType | typeof NAV_HOME): Botto
             title: 'ძველი ჩანაწერები',
             link: '/artists/' + ArtistType.OLD_RECORDINGS,
             isSelected: selectedType == ArtistType.OLD_RECORDINGS,
+            isVisible: true
+        },
+        <BottomBarItem>{
+            id: NAV_ME,
+            icon: 'favorite',
+            title: 'ჩემი',
+            link: '/me',
+            isSelected: selectedType === NAV_ME,
             isVisible: true
         }
     ];

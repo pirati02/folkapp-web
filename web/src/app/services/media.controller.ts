@@ -4,6 +4,7 @@ import {RepeatType} from '../models/repeate.type';
 import {Song} from '../models/song';
 import {Artist} from '../models/artist';
 import {SongsService} from './songs.service';
+import {LibraryService} from './library.service';
 
 /** A play is counted once this much of a song has been heard, so skipped songs don't count. */
 const PLAY_LOG_SECONDS = 30;
@@ -43,7 +44,7 @@ export class MediaController {
     return this.audio.currentTime || 0;
   }
 
-  constructor(private songsService: SongsService) {
+  constructor(private songsService: SongsService, private library: LibraryService) {
     this.audio.onplay = () => {
       this.isPlaying = true;
       this.startPositionUpdates();
@@ -72,6 +73,7 @@ export class MediaController {
   /** load + play a song */
   play(song: Song) {
     this.prepare(song);
+    this.library.addRecent(song);
     // Browsers refuse to start audio without a tap first; the play button still works then.
     this.audio.play().catch(() => this.isPlaying = false);
   }
