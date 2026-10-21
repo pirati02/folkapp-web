@@ -9,6 +9,18 @@
   </div>
 
   <div class="page-body" *ngIf="!loading">
+    <div class="summary" *ngIf="songs.length || chants.length">
+      <span class="counts">{{ countsLabel }}</span>
+      <div class="summary-actions" *ngIf="visibleSongs.length">
+        <button class="primary-button" (click)="playAll()">
+          <mat-icon>play_arrow</mat-icon>მოსმენა
+        </button>
+        <button class="secondary-button" (click)="shuffleAll()">
+          <mat-icon>shuffle</mat-icon>არევა
+        </button>
+      </div>
+    </div>
+
     <div class="sort-row d-flex" *ngIf="visibleSongs.length">
       <button class="chip" [class.is-on]="sort === 'name'" (click)="changeSort('name')">ა–ჰ</button>
       <button class="chip" [class.is-on]="sort === 'popular'" (click)="changeSort('popular')">პოპულარული</button>

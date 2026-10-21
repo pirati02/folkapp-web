@@ -58,3 +58,13 @@
     text-overflow: ellipsis;
     pointer-events: none;
 }
+
+// On wide screens the app is a centred column, not stretched across the whole window.
+@media (min-width: 840px) {
+    .app-shell {
+        max-width: 760px;
+        margin: 0 auto;
+        background: #fff;
+        box-shadow: 0 0 24px rgba(0, 0, 0, 0.08);
+    }
+}

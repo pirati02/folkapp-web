@@ -93,6 +93,29 @@ export class ArtistComponent implements OnInit {
         this.mediaController.play(song);
     }
 
+    /** e.g. "32 სიმღერა · 8 საგალობელი" */
+    get countsLabel(): string {
+        return [
+            this.songs.length ? `${this.songs.length} სიმღერა` : '',
+            this.chants.length ? `${this.chants.length} საგალობელი` : ''
+        ].filter(Boolean).join(' · ');
+    }
+
+    playAll() {
+        if (this.mediaController.shuffle) {
+            this.mediaController.toggleShuffle();
+        }
+        this.selectSong(this.visibleSongs[0]);
+    }
+
+    shuffleAll() {
+        if (!this.mediaController.shuffle) {
+            this.mediaController.toggleShuffle();
+        }
+        const songs = this.visibleSongs;
+        this.selectSong(songs[Math.floor(Math.random() * songs.length)]);
+    }
+
     private load(artistId: string, sharedSongId?: string) {
         this.loading = true;
         forkJoin({
