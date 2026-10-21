@@ -3,7 +3,17 @@
   src: url(assets/bpg_nino_mtavruli_bold.ttf) format("opentype");
 }
 
+// Lists and running text in regular Georgian, which fits far more of a long name than all-caps
+// Mtavruli; Mtavruli stays for titles (see --font-display in theme.scss).
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-body);
+}
 
-* {
-  font-family: 'nino_mtavruli', 'arial', sans-serif;
+.header,
+.section-title {
+  font-family: var(--font-display);
 }

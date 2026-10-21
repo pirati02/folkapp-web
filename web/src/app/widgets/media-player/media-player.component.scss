@@ -7,8 +7,8 @@
   gap: 2px;
   height: 60px;
   padding: 0 6px 0 0;
-  background-color: #a57e3b;
-  color: #fff;
+  background-color: var(--player);
+  color: var(--on-player);
 }
 
 .progress {
@@ -16,7 +16,7 @@
   top: 0;
   left: 0;
   height: 2px;
-  background: $skin;
+  background: var(--on-player);
   transition: width 0.5s linear;
 }
 

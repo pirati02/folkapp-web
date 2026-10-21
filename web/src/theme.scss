@@ -1,0 +1,51 @@
+// The app's colours, in one place. Components use these through var(--…) (and $choco / $skin in
+// variables.scss), so the dark theme below is just a second set of values.
+// Text pairs meet WCAG AA (4.5:1); "faint" is for idle icons only (3:1).
+
+:root {
+  color-scheme: light;
+
+  --brand: #a8501a; // accents, active items and the primary button (the old `chocolate` was 3.6:1 on white)
+  --on-brand: #ffffff;
+  --surface: #ffffff;
+  --surface-alt: #f5f2de; // the cream of headers, cards and tiles
+  --surface-raised: #ffffff; // menus
+  --text: #1a1a1a;
+  --text-muted: #6b6b6b;
+  --text-faint: #8a8a8a;
+  --border: #e5e0d0;
+  --player: #8a652a;
+  --player-deep: #6e5122;
+  --on-player: #ffffff;
+  --toast: #323232;
+  --on-toast: #ffffff;
+  --backdrop: #efe9d2; // around the app column on wide screens
+
+  --font-body: 'Noto Sans Georgian', 'BPG Arial', system-ui, sans-serif;
+  --font-display: nino_mtavruli, 'Noto Sans Georgian', sans-serif; // Mtavruli: titles and labels only
+
+  // Angular Material parts we use
+  --mat-divider-color: var(--border);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --brand: #f0a06a;
+    --on-brand: #1a1209;
+    --surface: #151311;
+    --surface-alt: #25211b;
+    --surface-raised: #2b2620;
+    --text: #f1ece0;
+    --text-muted: #a9a297;
+    --text-faint: #7d776d;
+    --border: #36302a;
+    --player: #4a3818;
+    --player-deep: #33260f;
+    --on-player: #f6efe0;
+    --toast: #e9e3d4;
+    --on-toast: #151311;
+    --backdrop: #0c0b0a;
+  }
+}

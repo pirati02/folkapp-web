@@ -11,23 +11,23 @@
   height: $bottom-bar-height;
   display: flex;
   align-items: center;
-  background: #fff;
+  background: var(--surface);
   padding-bottom: env(safe-area-inset-bottom);
   /* iOS home indicator */
 
   .item {
     flex-grow: 1;
-    color: black;
+    color: var(--text);
     min-width: 0;
     padding: 0 4px;
     font-size: 11px;
     line-height: 1.2;
     text-align: center;
+    font-family: var(--font-display);
   }
 
   .item mat-icon {
     color: inherit;
-    /* or a specific color like #fff */
     font-family: 'Material Icons' !important;
     font-style: normal;
     font-weight: normal;
@@ -42,6 +42,6 @@
   }
 
   .is-selected {
-    color: chocolate;
+    color: var(--brand);
   }
 }

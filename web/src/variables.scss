@@ -31,7 +31,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-$choco: chocolate;
-$skin: #f5f2de;
+$choco: var(--brand);
+$skin: var(--surface-alt);
 
 $bottom-bar-height: 70px;

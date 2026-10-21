@@ -36,7 +36,7 @@
   border-left: 4px solid $choco;
   border-radius: 8px;
   background: $skin;
-  color: #000;
+  color: var(--text);
   text-align: left;
   cursor: pointer;
 }
@@ -50,6 +50,7 @@
 }
 
 .pick-label {
+  font-family: var(--font-display);
   font-size: 11px;
   color: $choco;
 }
@@ -67,7 +68,7 @@
 
 .pick-artist {
   font-size: 12px;
-  color: #6b6b6b;
+  color: var(--text-muted);
 }
 
 .pick-play {
@@ -85,7 +86,7 @@
   margin: 12px 16px 0;
   font-size: 13px;
   font-weight: normal;
-  color: #6b6b6b;
+  color: var(--text-muted);
 }
 
 .holiday-head {

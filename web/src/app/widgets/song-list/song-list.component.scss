@@ -16,7 +16,7 @@
 
 .song-artist {
   font-size: 12px;
-  color: #6b6b6b;
+  color: var(--text-muted);
   margin-top: 2px;
 }
 
@@ -53,7 +53,7 @@ mark {
   padding: 8px;
   border: none;
   background: none;
-  color: #9a9a9a;
+  color: var(--text-faint);
   cursor: pointer;
 
   mat-icon {

@@ -25,17 +25,17 @@
 .chip {
   white-space: nowrap;
   padding: 6px 12px;
-  border: 1px solid #d6d0b8;
+  border: 1px solid var(--border);
   border-radius: 16px;
   background: none;
-  color: #000;
+  color: var(--text);
   font-size: 13px;
   cursor: pointer;
 
   &.is-on {
-    border-color: chocolate;
-    background: #f5f2de;
-    color: chocolate;
+    border-color: var(--brand);
+    background: var(--surface-alt);
+    color: var(--brand);
   }
 }
 
@@ -63,7 +63,7 @@
 
 .counts {
   font-size: 13px;
-  color: #6b6b6b;
+  color: var(--text-muted);
 }
 
 .summary-actions {
@@ -90,12 +90,12 @@
 
 .primary-button {
   border: none;
-  background: chocolate;
-  color: #fff;
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
 .secondary-button {
-  border: 1px solid chocolate;
+  border: 1px solid var(--brand);
   background: none;
-  color: chocolate;
+  color: var(--brand);
 }

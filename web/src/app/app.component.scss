@@ -35,8 +35,8 @@
 .offline-banner {
     flex: none;
     padding: 6px 12px;
-    background: #323232;
-    color: #fff;
+    background: var(--toast);
+    color: var(--on-toast);
     font-size: 12px;
     text-align: center;
 }
@@ -50,13 +50,20 @@
     max-width: calc(100vw - 32px);
     padding: 8px 14px;
     border-radius: 6px;
-    background: #323232;
-    color: #fff;
+    background: var(--toast);
+    color: var(--on-toast);
     font-size: 14px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     pointer-events: none;
+
+    // Over the full-screen player, keep clear of its controls and menus.
+    &.is-top {
+        position: fixed;
+        top: calc(56px + env(safe-area-inset-top));
+        bottom: auto;
+    }
 }
 
 // On wide screens the app is a centred column, not stretched across the whole window.
@@ -64,7 +71,7 @@
     .app-shell {
         max-width: 760px;
         margin: 0 auto;
-        background: #fff;
+        background: var(--surface);
         box-shadow: 0 0 24px rgba(0, 0, 0, 0.08);
     }
 }

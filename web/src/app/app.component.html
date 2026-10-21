@@ -7,7 +7,7 @@
     <app-queue *ngIf="playerView.view === 'queue'" (closed)="playerView.close()"></app-queue>
   </div>
   <div class="player-container">
-    <div class="notice" *ngIf="notice.message" role="status">{{ notice.message }}</div>
+    <div class="notice" [class.is-top]="playerView.view === 'full'" *ngIf="notice.message" role="status">{{ notice.message }}</div>
     <app-media-player></app-media-player>
     <app-bottom-bar></app-bottom-bar>
   </div>

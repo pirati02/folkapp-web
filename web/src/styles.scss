@@ -1,4 +1,5 @@
 @import "variables";
+@import "theme";
 @import "fonts";
 
 //bpg_nino_mtavruli_bold
@@ -54,6 +55,8 @@ body {
   height: 100%;
   overflow: hidden; // only a page's .page-body scrolls, never the document
   overscroll-behavior: none;
+  background: var(--surface);
+  color: var(--text);
 }
 
 app-root {
@@ -68,7 +71,7 @@ app-root {
   text-align: center;
   font-size: 1.2em;
   font-weight: bold;
-  color: #000;
+  color: var(--text);
   flex: none;
   min-height: 50px;
   box-sizing: border-box;
@@ -102,9 +105,9 @@ mat-divider {
 .list {
   .list-item {
     padding: 15px 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border);
     font-size: 18px;
-    color: #000;
+    color: var(--text);
     cursor: pointer;
     user-select: none;
   }
@@ -128,7 +131,7 @@ mat-divider {
 
   .selected-tab {
     background: $choco;
-    color: white;
+    color: var(--on-brand);
     font-size: 1em;
   }
 }
@@ -179,6 +182,6 @@ mat-divider {
 }
 @media (min-width: 840px) {
   body {
-    background: #efe9d2; // around the centred app column
+    background: var(--backdrop); // around the centred app column
   }
 }
