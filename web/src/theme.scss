@@ -24,8 +24,11 @@
   --font-body: 'Noto Sans Georgian', 'BPG Arial', system-ui, sans-serif;
   --font-display: nino_mtavruli, 'Noto Sans Georgian', sans-serif; // Mtavruli: titles and labels only
 
-  // Angular Material parts we use
+  // Angular Material parts we use (its list text otherwise uses Roboto, which has no Georgian letters)
   --mat-divider-color: var(--border);
+  --mdc-list-list-item-label-text-font: var(--font-body);
+  --mdc-list-list-item-supporting-text-font: var(--font-body);
+  --mdc-list-list-item-trailing-supporting-text-font: var(--font-body);
 }
 
 @media (prefers-color-scheme: dark) {
