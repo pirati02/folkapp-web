@@ -3,9 +3,6 @@
 
 :host {
   display: block;
-  /* so the host can size itself in the grid */
-  grid-row: 4;
-  /* belt-and-suspenders in case parent selector misses */
   z-index: 10;
   /* stay above content/player */
 }

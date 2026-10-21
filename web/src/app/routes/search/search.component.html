@@ -8,12 +8,12 @@
     </span>
   </div>
 
-  <div class="d-flex flex-column">
+  <div class="search-input-container d-flex justify-content-center">
+    <input type="text" enterkeyhint="search" (keydown)="onSearch($event)" placeholder="მოძებნე სიმღერა ან მომღერალი">
+  </div>
 
-    <div class="search-input-container d-flex justify-content-center">
-      <input type="text" (keydown)="onSearch($event)" placeholder="მოძებნე სიმღერა ან მომღერალი">
-    </div>
-    <div class="d-flex full-width full-height">
+  <div class="page-body d-flex flex-column">
+    <div class="d-flex full-width">
       <div class="loader d-flex align-items-center justify-content-center flex-column" *ngIf="loading">
         <mat-spinner matSuffix *ngIf="loading" mode="indeterminate" diameter="50" color="red"></mat-spinner>
         <h4 *ngIf="showEmptyListText">ჩანაწერები ვერ მოიძებნა</h4>

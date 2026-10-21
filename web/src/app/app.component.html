@@ -1,11 +1,11 @@
-<div class="d-flex flex-column">
-  <div class="content" [ngStyle]="{'margin-bottom':playerContainer.offsetHeight+'px'}">
+<div class="app-shell d-flex flex-column">
+  <div class="content">
     <router-outlet></router-outlet>
   </div>
-  <div class="player-container" #playerContainer>
+  <div class="player-container">
     <app-media-player>
     </app-media-player>
- 
+
     <app-bottom-bar>
     </app-bottom-bar>
   </div>

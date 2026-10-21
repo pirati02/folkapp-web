@@ -14,14 +14,28 @@
 }
 
 .search-input-container {
+  flex: none;
+  box-sizing: border-box;
   width: 100%;
+  padding: 15px 10px;
 
-  :first-child {
-    width: 100%;
+  input {
+    flex: 1;
+    min-width: 0;
+    box-sizing: border-box;
     min-height: 40px;
     padding: 1rem 0.5rem;
-    margin: 15px 10px;
-    border-color: black;
-    border-width: 1px;
+    margin: 0;
+    border: 1px solid black;
+    border-radius: 0;
+    // Under 16px iOS Safari zooms the whole page in when the field is focused.
+    font-size: 16px;
   }
+}
+
+.song-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
 }

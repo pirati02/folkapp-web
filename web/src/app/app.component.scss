@@ -1,8 +1,17 @@
+// Header + scrolling list on top, player and bottom bar pinned below, all inside the visible
+// viewport so nothing overlaps and the document itself never scrolls.
+.app-shell {
+    height: 100%;
+    height: 100dvh;
+}
+
+.content {
+    flex: 1 1 auto;
+    min-height: 0;
+}
 
 .player-container {
-    position: fixed;
-    bottom: 0;
-    z-index: 10000;  
+    flex: none;
     width: 100%;
 
     audio {
@@ -11,7 +20,7 @@
 }
 
 @media only screen and (max-width: 480px) and (min-width: 320px)  {
-    
+
     .player-container {
 
         audio {
