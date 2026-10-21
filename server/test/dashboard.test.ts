@@ -20,14 +20,18 @@ it('serves the day’s picks and the holidays of the next two weeks', async () =
       id: ids.holiday,
       title: 'სვეტიცხოვლობა',
       date: '2026-10-14',
+      kind: 'feast',
       imagePath: `https://api.test/holidays/${ids.holiday}/image`,
       songs: [expect.objectContaining({ id: ids.shenXarVenaxi })],
     },
   ]);
 
+  // The computed feast on that day gives way to the entered one.
+  expect(body.holidays.filter((holiday: { date: string }) => holiday.date === '2026-10-14')).toHaveLength(1);
+
   // Past holidays and ones more than two weeks away are left out; a quiet fortnight shows the next feast.
-  expect((await dashboard('2026-10-15')).holidays).toEqual([expect.objectContaining({ title: 'გიორგობა', date: '2026-11-23' })]);
-  expect((await dashboard('2026-09-29')).holidays).toEqual([expect.objectContaining({ title: 'სვეტიცხოვლობა', date: '2026-10-14' })]);
+  expect((await dashboard('2026-10-15')).holidays).toEqual([expect.objectContaining({ title: 'მთავარანგელოზთა კრება', date: '2026-11-21' })]);
+  expect((await dashboard('2026-09-29')).holidays).toEqual([expect.objectContaining({ title: 'მცხეთობა - სვეტიცხოვლობა', date: '2026-10-14' })]);
 });
 
 it('adds church feasts with the chants matching them', async () => {
@@ -44,15 +48,17 @@ it('adds church feasts with the chants matching them', async () => {
   expect(spring.holidays.map((holiday: { title: string; date: string }) => `${holiday.date} ${holiday.title}`)).toEqual([
     '2026-04-05 ბზობა',
     '2026-04-07 ხარება',
-    '2026-04-10 წითელი პარასკევი',
+    '2026-04-09 დიდი ხუთშაბათი',
+    '2026-04-10 დიდი პარასკევი',
+    '2026-04-11 დიდი შაბათი',
     '2026-04-12 აღდგომა',
   ]);
   const easter = spring.holidays.find((holiday: { title: string }) => holiday.title === 'აღდგომა');
-  expect(easter).toMatchObject({ id: 'easter-2026-04-12', imagePath: null });
+  expect(easter).toMatchObject({ id: 'easter-2026-04-12', kind: 'feast', imagePath: null });
   expect(easter.songs.map((song: { name: string }) => song.name)).toEqual(['ქრისტე აღსდგა', 'ჭონა ალილო']);
 
   // Christmas takes ალილო carols, but not the Easter ჭონა ალილო; the window crosses into January.
-  const christmas = (await dashboard('2026-12-30')).holidays.find((holiday: { title: string }) => holiday.title === 'შობა');
+  const christmas = (await dashboard('2026-12-30')).holidays.find((holiday: { title: string }) => holiday.title === 'ქრისტეშობა');
   expect(christmas.date).toBe('2027-01-07');
   expect(christmas.songs.map((song: { name: string }) => song.name)).toEqual(['კახური ალილო']);
 });

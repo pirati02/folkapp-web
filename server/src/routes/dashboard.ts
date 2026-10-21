@@ -66,18 +66,21 @@ export function dashboardRoutes(app: FastifyInstance, { db, storage, links }: Ro
     const songLinks = links(request);
     const song = (row: SongRow | undefined) => (row ? toSong(row, songLinks) : null);
 
-    // Computed church feasts, unless the holiday table already has that feast on that day.
-    const entered = new Set(holidays.rows.map((holiday) => holiday.date + holiday.title));
-    let feasts = feastsBetween(day, HOLIDAY_DAYS_AHEAD).filter((feast) => !entered.has(feast.date + feast.title));
+    // Computed church feasts, except on days the holiday table already has one (it has an image).
+    const entered = new Set(holidays.rows.map((holiday) => holiday.date));
+    let feasts = feastsBetween(day, HOLIDAY_DAYS_AHEAD).filter((feast) => !entered.has(feast.date));
     if (!feasts.length && !holidays.rows.length) {
       // A quiet fortnight: still show what comes next.
-      feasts = feastsBetween(day, 366).slice(0, 1);
+      feasts = feastsBetween(day, 366)
+        .filter((feast) => feast.kind === 'feast')
+        .slice(0, 1);
     }
     const feastItems = await Promise.all(
       feasts.map(async (feast) => ({
         id: `${feast.key}-${feast.date}`,
         title: feast.title,
         date: feast.date,
+        kind: feast.kind,
         imagePath: null,
         songs: (await songsForFeast(feast)).rows.map((row) => toSong(row, songLinks)),
       })),
@@ -91,6 +94,7 @@ export function dashboardRoutes(app: FastifyInstance, { db, storage, links }: Ro
       holidays: [
         ...holidays.rows.map((holiday) => ({
           ...holiday,
+          kind: 'feast' as const,
           imagePath: songLinks.holidayImage(holiday.id) as string | null,
           songs: holidaySongs.rows
             .filter((row) => row.holidayId === holiday.id)

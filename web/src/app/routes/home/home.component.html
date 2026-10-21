@@ -21,15 +21,15 @@
     </section>
 
     <section *ngIf="dashboard.holidays.length">
-      <h3 class="section-title">დღესასწაულები</h3>
+      <h3 class="section-title">საეკლესიო კალენდარი</h3>
       <div class="holiday" *ngFor="let holiday of dashboard.holidays">
         <div class="holiday-head">
           <div class="holiday-image">
-            <mat-icon>event</mat-icon>
+            <mat-icon>{{ holiday.kind === 'fast' ? 'no_meals' : 'event' }}</mat-icon>
             <img *ngIf="holiday.imagePath" [src]="holiday.imagePath" alt="" loading="lazy" (error)="hideImage($event)">
           </div>
           <div class="holiday-text">
-            <span class="holiday-date">{{ dayLabel(holiday) }}</span>
+            <span class="holiday-date">{{ dayLabel(holiday) }}<ng-container *ngIf="holiday.kind === 'fast'"> · იწყება</ng-container></span>
             <span class="holiday-title">{{ holiday.title }}</span>
           </div>
           <button class="icon-button" *ngIf="holiday.songs.length" (click)="play(holiday.songs)"
