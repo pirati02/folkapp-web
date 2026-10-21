@@ -1,55 +1,17 @@
 <div class="tab-list-footer-page">
-   <div class="header d-flex">
-        <button class="close-button" (click)="router.navigate(['..'])">
-            <mat-icon>close</mat-icon>
-        </button>
-        <span class="header-title">
-            {{ artist?.name }}
-        </span>
-    </div>
+  <div class="header d-flex">
+    <button class="close-button" (click)="router.navigate(['..'])">
+      <mat-icon>close</mat-icon>
+    </button>
+    <span class="header-title">
+      {{ artist?.name }}
+    </span>
+  </div>
 
-  <div class="artists-list page-body d-flex flex-column position-relative" *ngIf="!loading">
-    
-    <div class="d-flex flex-column">
-        <div class="d-flex full-width full-height">
-            <div class="loader d-flex align-items-center justify-content-center flex-column" *ngIf="loading">
-                <mat-spinner matSuffix *ngIf="loading" mode="indeterminate" diameter="50" color="red"></mat-spinner>
-                <h4 *ngIf="showEmptyListText">სია ცარიელია</h4>
-            </div>
-
-            <div class="list-scroll-behavior" style="flex-grow: 1;" *ngIf="songType == 1 && songs.length > 0 && !loading">
-                <mat-list class="list songs-list">
-                    <mat-list-item *ngFor="let song of songs">
-                        <div class="d-flex flex-column">
-                            <a (click)="selectSong(song)" class="list-item song-item"
-                                [ngClass]="{'selected-song': song.isSelected}">
-                                <span>
-                                    {{ song.name }}
-                                </span>
-                            </a>
-                            <mat-divider></mat-divider>
-                        </div>
-                    </mat-list-item>
-                </mat-list>
-            </div>
-
-            <div class="list-scroll-behavior"  style="flex-grow: 1;" *ngIf="songType == 2 && chants.length > 0 && !loading">
-                <mat-list class="list songs-list">
-                    <mat-list-item *ngFor="let song of chants">
-                        <div class="d-flex flex-column">
-                            <a (click)="selectSong(song)" class="list-item song-item"
-                                [ngClass]="{'selected-song': song.isSelected}">
-                                <span>
-                                    {{ song.name }}
-                                </span>
-                            </a>
-                            <mat-divider></mat-divider>
-                        </div>
-                    </mat-list-item>
-                </mat-list>
-            </div>
-        </div>
-    </div>
+  <div class="page-body" *ngIf="!loading">
+    <app-song-list [songs]="visibleSongs" [activeId]="mediaController.selectedSong?.id"
+                   (songSelected)="selectSong($event)"></app-song-list>
+    <h4 class="empty-text" *ngIf="showEmptyListText">სია ცარიელია</h4>
   </div>
 
   <!-- Spinner row -->

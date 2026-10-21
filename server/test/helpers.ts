@@ -76,6 +76,7 @@ export async function createTestApp() {
     shortenUrl: async (url) => url,
     corsOrigins: ['http://localhost:4200'],
     publicBaseUrl: 'https://api.test',
+    webBaseUrl: 'https://web.test',
   });
   return {
     app,

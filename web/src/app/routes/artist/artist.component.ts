@@ -1,6 +1,7 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, DestroyRef, OnInit} from "@angular/core";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {Artist} from "../../models/artist";
-import {finalize, map, mergeMap, skip, tap} from "rxjs";
+import {combineLatest, finalize, forkJoin} from "rxjs";
 import {Song} from "../../models/song";
 import {SongsService} from "../../services/songs.service";
 import {SongType} from "../../models/song.type";
@@ -22,118 +23,93 @@ export class ArtistComponent implements OnInit {
     songs: Song[] = [];
     chants: Song[] = [];
     songType: SongType = SongType.Song;
-    selectedSong?: Song;
     bottomBarItems: BottomBarItem[] = [
         <BottomBarItem>{
-            id: 1,
+            id: SongType.Song,
             icon: 'music_note',
             title: 'სიმღერები',
             isSelected: true,
             isVisible: true
         },
         <BottomBarItem>{
-            id: 2,
+            id: SongType.Chant,
             icon: 'music_note',
             title: 'საგალობლები',
             isSelected: false,
             isVisible: true
         }
     ]
+
+    get visibleSongs(): Song[] {
+        return this.songType == SongType.Song ? this.songs : this.chants;
+    }
+
     constructor(
         public router: Router,
+        public mediaController: MediaController,
         private artistService: ArtistsService,
         private songService: SongsService,
         private route: ActivatedRoute,
-        private mediaController: MediaController,
-        private bottomBarService: BottomBarService
+        private bottomBarService: BottomBarService,
+        private destroyRef: DestroyRef
     ) {
-
     }
 
     ngOnInit(): void {
-        this.route.params.pipe(tap(items => {
-            const artistId = items["id"] as string;
-            if (artistId) {
-                this.loadAndSelectArtist(artistId);
-                this.loadSongs().subscribe();
-            }
-        })).subscribe();
-
-        this.selectedSong = this.mediaController.selectedSong;
-        this.mediaController.selectedSongChanged$.pipe(
-            skip(1),
-            tap(newSong => {
-                this.selectedSong = newSong;
-
-                const song =
-                    this.songs.find(item => item.id == newSong!.id) ||
-                    this.chants.find(item => item.id == newSong!.id);
-                if (!song) {
-                    return;
-                }
-                this.selectSong(song!, false);
-            })
-        ).subscribe();
         this.bottomBarService.setItems(this.bottomBarItems);
+        this.bottomBarService.selectItem$
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(item => this.showType(item.id));
+
+        combineLatest([this.route.params, this.route.queryParams])
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(([params, query]) => this.load(params['id'], query['song']));
     }
 
-    loadSongs() {
-        return this.songService.songsByArtistId(this.artist?.id!)
-            .pipe(
-                map(items => {
-                    this.songs = items.songs;
-                    this.chants = items.chants;
-
-                    this.bottomBarItems[1].isVisible = this.chants.length > 0;
-                    this.bottomBarItems[0].isVisible = this.songs.length > 0;
-                    if (this.songs.length === 0) {
-                        this.songType = 2;
-                        this.bottomBarItems[1].isSelected = this.chants.length > 0;
-                    }
-
-                    if (!this.selectedSong) {
-                        return;
-                    }
-                    const song = [...this.songs, ...this.chants].find(item => item.id == this.selectedSong!.id);
-                    if (!song) {
-                        return;
-                    }
-                    this.selectSong(song!, false);
-                }),
-                finalize(() => this.loading = false)
-            );
+    selectSong(song: Song) {
+        this.mediaController.playList = this.visibleSongs;
+        this.mediaController.selectedArtist = this.artist;
+        this.mediaController.play(song);
     }
 
-    selectSong(song: Song, play: boolean = true) {
-        this.songs.filter(item => item.id != song.id)
-            .forEach(item => item.isSelected = false);
-        this.chants.filter(item => item.id != song.id)
-            .forEach(item => item.isSelected = false);
+    private load(artistId: string, sharedSongId?: string) {
+        this.loading = true;
+        forkJoin({
+            artist: this.artistService.artistById(artistId),
+            lists: this.songService.songsByArtistId(artistId)
+        })
+            .pipe(finalize(() => this.loading = false))
+            .subscribe(({artist, lists}) => {
+                this.artist = artist;
+                this.songs = lists.songs;
+                this.chants = lists.chants;
+                this.bottomBarItems[0].isVisible = this.songs.length > 0;
+                this.bottomBarItems[1].isVisible = this.chants.length > 0;
 
-        song!.isSelected = true;
-        this.selectedSong = song!;
+                const shared = [...this.songs, ...this.chants].find(song => song.id == sharedSongId);
+                const current = this.mediaController.selectedSong;
+                const focus = shared ?? [...this.songs, ...this.chants].find(song => song.id == current?.id);
+                this.showType(focus?.songType ?? (this.songs.length ? SongType.Song : SongType.Chant));
 
-        if (play) {
-          this.mediaController.playList = this.songType == SongType.Song ? this.songs : this.chants;
-            this.mediaController.selectedArtist = this.artist;
-            this.mediaController.play(song);
-        }
+                if (shared && shared.id != current?.id) {
+                    // Opened from a shared link: ready to play, but browsers only start audio after a tap.
+                    this.mediaController.playList = this.visibleSongs;
+                    this.mediaController.selectedArtist = artist;
+                    this.mediaController.prepare(shared);
+                }
+                if (focus) {
+                    setTimeout(() => document.getElementById('song-' + focus.id)?.scrollIntoView({block: 'center'}));
+                }
+            });
     }
 
-    private loadAndSelectArtist(id: string): void {
-        this.artistService.artistById(id)
-            .pipe(
-                mergeMap((artist) => {
-                    this.artist = artist;
-                    return this.loadSongs();
-                })
-            )
-            .subscribe()
+    private showType(type: SongType) {
+        this.songType = type;
+        this.bottomBarItems.forEach(item => item.isSelected = item.id == type);
+        this.bottomBarService.setItems([...this.bottomBarItems]);
     }
 
     get showEmptyListText(): boolean {
-        return !this.loading
-            && (this.songType == SongType.Song && this.songs.length == 0)
-            || (this.songType == SongType.Chant && this.chants.length == 0)
+        return !this.loading && this.visibleSongs.length == 0;
     }
 }

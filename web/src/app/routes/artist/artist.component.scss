@@ -1,7 +1,3 @@
-.selected-song {
-  color: chocolate;
-}
-
 .close-button {
   background: none;
   border: none;
@@ -16,9 +12,6 @@
   max-width: 90%;
 }
 
-.song-item {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin: 0;
+.empty-text {
+  text-align: center;
 }

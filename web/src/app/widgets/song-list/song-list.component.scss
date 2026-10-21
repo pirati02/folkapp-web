@@ -1,0 +1,38 @@
+@import '../../../variables';
+
+.song-item {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  min-width: 0;
+}
+
+.song-name,
+.song-artist {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-artist {
+  font-size: 12px;
+  color: #6b6b6b;
+  margin-top: 2px;
+}
+
+.has-artist {
+  height: auto !important;
+  min-height: 48px;
+}
+
+.is-active,
+.is-active .song-artist {
+  color: $choco;
+}
+
+mark {
+  background: none;
+  color: $choco;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

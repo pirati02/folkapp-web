@@ -5,9 +5,13 @@ import { ARTIST_COLUMNS, SONG_COLUMNS, SONGS_WITH_ARTIST, toArtist, toSong, type
 
 const MAX_RESULTS = 100;
 
+/** Phone keyboards can type Georgian capitals (Mtavruli, U+1C90–U+1CBF); names are stored in Mkhedruli. */
+const toMkhedruli = (text: string) =>
+  text.replace(/[Ა-Ჿ]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0x1c90 + 0x10d0));
+
 export function searchRoutes(app: FastifyInstance, { db, links }: RouteDeps) {
   app.get<{ Params: { term: string } }>('/search/:term', async (request) => {
-    const term = request.params.term.trim();
+    const term = toMkhedruli(request.params.term.trim());
     if (!term) {
       return ok({ artists: [], songs: [] });
     }

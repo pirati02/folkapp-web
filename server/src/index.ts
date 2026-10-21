@@ -19,6 +19,7 @@ const app = await buildApp(
     shortenUrl: createUrlShortener(config.TINYURL_TOKEN, (error) => app.log.warn({ err: error }, 'URL shortening failed')),
     corsOrigins: config.CORS_ORIGINS,
     publicBaseUrl: config.PUBLIC_BASE_URL,
+    webBaseUrl: config.WEB_BASE_URL,
   },
   { level: 'info' },
 );

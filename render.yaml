@@ -17,6 +17,9 @@ services:
         sync: false
       - key: CORS_ORIGINS
         value: https://folkapp-web.onrender.com
+      # The web app; shared song links open the song there.
+      - key: WEB_BASE_URL
+        value: https://folkapp-web-1.onrender.com
       - key: GDRIVE_AUDIO_FOLDER_ID
         sync: false
       - key: GDRIVE_IMAGE_FOLDER_ID

@@ -12,6 +12,8 @@ const schema = z.object({
   PORT: z.coerce.number().int().positive().default(8080),
   /** Public origin of this API, used to build song/image links. Falls back to the request's origin. */
   PUBLIC_BASE_URL: z.url().optional(),
+  /** Origin of the web app, e.g. https://folkapp-web-1.onrender.com; shared song links open the song there. */
+  WEB_BASE_URL: z.url().optional(),
   CORS_ORIGINS: list.default(['http://localhost:4200']),
 
   /** e.g. postgres://user:pass@host:5432/FolkAppDatabase?sslmode=no-verify */

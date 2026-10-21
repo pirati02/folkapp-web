@@ -12,6 +12,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {SearchComponent} from "./routes/search/search.component";
 import { BottomBarComponent } from "./widgets/bottom-bar/bottom-bar.component";
 import { MediaPlayerComponent } from "./widgets/media-player/media-player.component";
+import { SongListComponent } from "./widgets/song-list/song-list.component";
+import { HighlightPipe } from "./shared/highlight.pipe";
 
 
 @NgModule({
@@ -26,6 +28,8 @@ import { MediaPlayerComponent } from "./widgets/media-player/media-player.compon
   imports: [
     BottomBarComponent,
     MediaPlayerComponent,
+    SongListComponent,
+    HighlightPipe,
     CommonModule,
     RouterOutlet,
     MatIconModule,

@@ -16,7 +16,7 @@ export class SearchService {
   }
 
   search(term: string): Observable<SearchResult> {
-    return this.httpClient.get<BaseResponse<SearchResult>>(this.baseUrl + '/search/' + term).pipe(
+    return this.httpClient.get<BaseResponse<SearchResult>>(this.baseUrl + '/search/' + encodeURIComponent(term)).pipe(
       map(data => data.body)
     );
   }

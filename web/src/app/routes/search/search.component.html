@@ -8,50 +8,64 @@
     </span>
   </div>
 
-  <div class="search-input-container d-flex justify-content-center">
-    <input type="text" enterkeyhint="search" (keydown)="onSearch($event)" placeholder="მოძებნე სიმღერა ან მომღერალი">
+  <div class="search-input-container d-flex">
+    <input #searchInput type="search" enterkeyhint="search" autocomplete="off"
+           placeholder="მოძებნე სიმღერა ან მომღერალი"
+           (input)="onInput(searchInput.value)" (keydown.enter)="onEnter()">
+    <button class="clear-button" *ngIf="term" (click)="clearTerm()" aria-label="გასუფთავება">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
 
-  <div class="page-body d-flex flex-column">
-    <div class="d-flex full-width">
-      <div class="loader d-flex align-items-center justify-content-center flex-column" *ngIf="loading">
-        <mat-spinner matSuffix *ngIf="loading" mode="indeterminate" diameter="50" color="red"></mat-spinner>
-        <h4 *ngIf="showEmptyListText">ჩანაწერები ვერ მოიძებნა</h4>
-      </div>
-
-      <div class="list-scroll-behavior" style="flex-grow: 1;"
-        *ngIf="tabType == 1 && searchResult.artists.length > 0 && !loading">
-        <mat-list class="list songs-list">
-          <mat-list-item *ngFor="let artist of searchResult.artists">
-            <div class="d-flex flex-column">
-              <a (click)="selectArtist(artist)" class="list-item song-item"
-                [ngClass]="{'selected-result': artist.isSelected}">
-                <span>
-                  {{ artist.name }}
-                </span>
-              </a>
-              <mat-divider></mat-divider>
-            </div>
+  <div class="page-body">
+    <!-- Nothing typed yet: recent searches -->
+    <ng-container *ngIf="state.status === 'idle'">
+      <div class="section" *ngIf="!term.trim() && recentSearches.length">
+        <div class="section-title d-flex">
+          <span>ბოლო ძიებები</span>
+          <button class="text-button" (click)="clearRecent()">გასუფთავება</button>
+        </div>
+        <mat-list class="list">
+          <mat-list-item *ngFor="let recent of recentSearches">
+            <a class="list-item recent-item d-flex align-items-center" (click)="useRecent(recent)">
+              <mat-icon>history</mat-icon>
+              <span>{{ recent }}</span>
+            </a>
           </mat-list-item>
         </mat-list>
       </div>
+    </ng-container>
 
-      <div class="list-scroll-behavior" style="flex-grow: 1;"
-        *ngIf="tabType == 2 && searchResult.songs.length > 0 && !loading">
-        <mat-list class="list songs-list">
-          <mat-list-item *ngFor="let song of searchResult.songs">
-            <div class="d-flex flex-column">
-              <a (click)="selectSong(song)" class="list-item song-item"
-                [ngClass]="{'selected-result': song.isSelected}">
-                <span>
-                  {{ song.name }}
-                </span>
-              </a>
-              <mat-divider></mat-divider>
-            </div>
-          </mat-list-item>
-        </mat-list>
-      </div>
+    <div class="loader d-flex align-items-center justify-content-center" *ngIf="state.status === 'loading'">
+      <mat-spinner mode="indeterminate" diameter="40"></mat-spinner>
     </div>
+
+    <h4 class="message" *ngIf="state.status === 'error'">ძიება ვერ მოხერხდა. სცადე თავიდან.</h4>
+    <h4 class="message" *ngIf="isEmpty">ჩანაწერები ვერ მოიძებნა</h4>
+
+    <ng-container *ngIf="result as result">
+      <div class="section" *ngIf="result.artists.length">
+        <div class="section-title">ანსამბლები</div>
+        <mat-list class="list">
+          <mat-list-item *ngFor="let artist of result.artists">
+            <div class="d-flex flex-column">
+              <a (click)="selectArtist(artist)" class="list-item artist-item">
+                <ng-container *ngFor="let part of artist.name | highlight: term">
+                  <mark *ngIf="part.match; else plain">{{ part.text }}</mark>
+                  <ng-template #plain>{{ part.text }}</ng-template>
+                </ng-container>
+              </a>
+              <mat-divider></mat-divider>
+            </div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+
+      <div class="section" *ngIf="result.songs.length">
+        <div class="section-title">სიმღერები</div>
+        <app-song-list [songs]="result.songs" [activeId]="mediaController.selectedSong?.id" [highlight]="term"
+                       [showArtist]="true" (songSelected)="selectSong($event)"></app-song-list>
+      </div>
+    </ng-container>
   </div>
 </div>

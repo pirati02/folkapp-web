@@ -38,6 +38,8 @@ export const SONGS_WITH_ARTIST = `media."Song" s JOIN media."Artist" a ON a."Id"
 export interface Links {
   song(id: string): string;
   holidayImage(id: string): string;
+  /** Page with link-preview tags that forwards to the song in the web app; this is what gets shared. */
+  sharePage(id: string): string;
 }
 
 /**
@@ -49,6 +51,7 @@ export function linksFor(request: FastifyRequest, publicBaseUrl: string | undefi
   return {
     song: (id) => `${base}/songs/${id}/stream`,
     holidayImage: (id) => `${base}/holidays/${id}/image`,
+    sharePage: (id) => `${base}/share/${id}`,
   };
 }
 

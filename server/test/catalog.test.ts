@@ -79,11 +79,25 @@ describe('songs', () => {
     expect(noData.json().error.message).toBe('Song data not found.');
   });
 
-  it('shares the stable song link', async () => {
-    const response = await ctx.app.inject(`/songs/${ids.chakrulo}/share`);
-    expect(response.json().body).toBe(`https://api.test/songs/${ids.chakrulo}/stream`);
+  it('returns a song by id', async () => {
+    const response = await ctx.app.inject(`/songs/${ids.shenXarVenaxi}`);
+    expect(response.json().body).toEqual({
+      id: ids.shenXarVenaxi,
+      name: 'შენ ხარ ვენახი',
+      songType: 2,
+      artistName: 'რუსთავი',
+      artistId: ids.rustavi,
+      path: `https://api.test/songs/${ids.shenXarVenaxi}/stream`,
+    });
+
+    const unknown = await ctx.app.inject('/songs/00000000-0000-4000-8000-000000000000');
+    expect(unknown.statusCode).toBe(404);
   });
 
+  it('shares the song’s preview page', async () => {
+    const response = await ctx.app.inject(`/songs/${ids.chakrulo}/share`);
+    expect(response.json().body).toBe(`https://api.test/share/${ids.chakrulo}`);
+  });
   it('logs plays and downloads', async () => {
     const play = await ctx.app.inject({ method: 'PUT', url: `/songs/${ids.chakrulo}/log`, payload: { logType: 0 } });
     const download = await ctx.app.inject({ method: 'PUT', url: `/songs/${ids.chakrulo}/log`, payload: { logType: 1 } });
@@ -100,6 +114,31 @@ describe('songs', () => {
     const response = await ctx.app.inject({ method: 'PUT', url: `/songs/${ids.chakrulo}/log`, payload: { logType: 7 } });
     expect(response.statusCode).toBe(400);
   });
+});
+
+describe('share page', () => {
+  it('carries link-preview tags and forwards to the song in the web app', async () => {
+    const response = await ctx.app.inject(`/share/${ids.chakrulo}`);
+    expect(response.statusCode).toBe(200);
+    expect(response.headers['content-type']).toContain('text/html');
+    expect(response.body).toContain('<meta property="og:title" content="ჩაკრულო">');
+    expect(response.body).toContain('<meta property="og:description" content="რუსთავი · FolkApp">');
+    expect(response.body).toContain(`location.replace("https://web.test/song/${ids.chakrulo}")`);
+  });
+
+  it('escapes song names', async () => {
+    await ctx.db.query(`UPDATE media."Song" SET "Name" = $1 WHERE "Id" = $2`, ['<b>"x"</b>', ids.chakrulo]);
+    const response = await ctx.app.inject(`/share/${ids.chakrulo}`);
+    expect(response.body).not.toContain('<b>');
+    expect(response.body).toContain('&#60;b&#62;&#34;x&#34;&#60;/b&#62;');
+  });
+
+  it.each([['00000000-0000-4000-8000-000000000000'], ['not-a-guid']])('sends %s to the web app’s home', async (id) => {
+    const response = await ctx.app.inject(`/share/${id}`);
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe('https://web.test/');
+  });
+
 });
 
 describe('search', () => {
@@ -119,6 +158,11 @@ describe('search', () => {
 
     const lowercase = await ctx.app.inject('/search/odoia');
     expect(lowercase.json().body.songs).toHaveLength(1);
+  });
+
+  it('matches Georgian capitals (Mtavruli) typed on a phone keyboard', async () => {
+    const response = await ctx.app.inject(`/search/${encodeURIComponent('ᲩᲐᲙᲠᲣᲚᲝ')}`);
+    expect(response.json().body.songs.map((song: { id: string }) => song.id)).toEqual([ids.chakrulo]);
   });
 });
 

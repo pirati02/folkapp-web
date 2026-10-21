@@ -10,7 +10,7 @@ type SongRequest = FastifyRequest<{ Params: { id: string } }>;
 // SongLogType in the .NET API: Played = 0, Downloaded = 1.
 const logBody = z.object({ logType: z.union([z.literal(0), z.literal(1)]) });
 
-export function songRoutes(app: FastifyInstance, { db, storage, links, shortenUrl }: RouteDeps) {
+export function songRoutes(app: FastifyInstance, { db, storage, links, shortenUrl, webBaseUrl }: RouteDeps) {
   async function findSong(id: string) {
     const {
       rows: [song],
@@ -36,6 +36,17 @@ export function songRoutes(app: FastifyInstance, { db, storage, links, shortenUr
     return sendFile(reply, file);
   }
 
+  app.get<{ Params: { id: string } }>('/songs/:id', async (request) => {
+    const id = uuidParam(request.params.id);
+    const {
+      rows: [song],
+    } = await db.query<SongRow>(`SELECT ${SONG_COLUMNS} FROM ${SONGS_WITH_ARTIST} WHERE s."Id" = $1`, [id]);
+    if (!song) {
+      throw errors.songNotFound();
+    }
+    return ok(toSong(song, links(request)));
+  });
+
   app.get<{ Params: { id: string } }>('/songs/:id/all', async (request) => {
     const artistId = uuidParam(request.params.id);
     const { rows } = await db.query<SongRow>(
@@ -58,7 +69,9 @@ export function songRoutes(app: FastifyInstance, { db, storage, links, shortenUr
   app.get<{ Params: { id: string } }>('/songs/:id/share', async (request) => {
     const id = uuidParam(request.params.id);
     const song = await findSong(id);
-    return ok(await shortenUrl(links(request).song(id), song.name));
+    // Without the web app's address there is nothing to forward to, so share the audio itself.
+    const url = webBaseUrl ? links(request).sharePage(id) : links(request).song(id);
+    return ok(await shortenUrl(url, song.name));
   });
 
   app.put<{ Params: { id: string } }>('/songs/:id/log', async (request) => {

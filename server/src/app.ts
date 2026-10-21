@@ -6,6 +6,7 @@ import { linksFor, type Links } from './media.js';
 import { artistRoutes } from './routes/artists.js';
 import { dashboardRoutes } from './routes/dashboard.js';
 import { searchRoutes } from './routes/search.js';
+import { shareRoutes } from './routes/share.js';
 import { songRoutes } from './routes/songs.js';
 import type { Storage } from './storage/types.js';
 import type { UrlShortener } from './url-shortener.js';
@@ -16,6 +17,8 @@ export interface AppDeps {
   shortenUrl: UrlShortener;
   corsOrigins: string[];
   publicBaseUrl?: string;
+  /** Origin of the web app; shared song links forward there. */
+  webBaseUrl?: string;
 }
 
 export interface RouteDeps extends AppDeps {
@@ -63,6 +66,7 @@ export async function buildApp(deps: AppDeps, logger: FastifyServerOptions['logg
   songRoutes(app, routeDeps);
   searchRoutes(app, routeDeps);
   dashboardRoutes(app, routeDeps);
+  shareRoutes(app, routeDeps);
 
   return app;
 }

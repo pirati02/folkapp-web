@@ -15,10 +15,9 @@ import {SongsService} from "../../services/songs.service";
 export class MediaPlayerComponent implements OnInit {
 
   repeatType?: RepeatType;
-
-  get canShare(): boolean {
-    return !!navigator.share;
-  }
+  /** Short message shown over the player, e.g. after copying a link. */
+  notice?: string;
+  private noticeTimer?: ReturnType<typeof setTimeout>;
 
   constructor(
     public mediaController: MediaController,
@@ -92,14 +91,26 @@ export class MediaPlayerComponent implements OnInit {
 
   share() {
     const song = this.mediaController.selectedSong!;
-    this.songsService.share(song.id).subscribe(shortUrl => {
-      navigator.share({
-        title: song.name,
-        text: song.name + ' ' + song.artistName,
-        url: shortUrl
-      })
-        .then(() => console.log('Shared successfully!'))
-        .catch((error) => console.error('Share failed:', error));
-    })
+    this.songsService.share(song.id).subscribe({
+      next: url => {
+        if (navigator.share) {
+          // Rejects when the person closes the share sheet; nothing to report then.
+          navigator.share({title: song.name, text: song.name + ' — ' + song.artistName, url}).catch(() => {});
+          return;
+        }
+        // Desktop browsers have no share sheet: copy the link instead.
+        navigator.clipboard.writeText(url).then(
+          () => this.notify('ბმული დაკოპირდა'),
+          () => this.notify(url)
+        );
+      },
+      error: () => this.notify('ბმულის შექმნა ვერ მოხერხდა')
+    });
+  }
+
+  private notify(message: string) {
+    this.notice = message;
+    clearTimeout(this.noticeTimer);
+    this.noticeTimer = setTimeout(() => this.notice = undefined, 2500);
   }
 }

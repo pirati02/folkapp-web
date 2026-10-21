@@ -3,6 +3,10 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {RepeatType} from '../models/repeate.type';
 import {Song} from '../models/song';
 import {Artist} from '../models/artist';
+import {SongsService} from './songs.service';
+
+/** A play is counted once this much of a song has been heard, so skipped songs don't count. */
+const PLAY_LOG_SECONDS = 30;
 
 @Injectable({providedIn: 'root'})
 export class MediaController {
@@ -12,6 +16,7 @@ export class MediaController {
 
   private audio = new Audio();
   private positionTimer?: any;
+  private playLogged = false;
 
   /** playback state */
   isPlaying = false;
@@ -38,42 +43,46 @@ export class MediaController {
     return this.audio.currentTime || 0;
   }
 
-  constructor() {
-    this.audio.onplay = () => {
-      this.isPlaying = true;
-      this.updatePlaybackState();
-    };
-    this.audio.onpause = () => {
-      this.isPlaying = false;
-      this.updatePlaybackState();
-    };
-    this.audio.onended = () => this.handleEnded();
-  }
-
-  /** load + play a song */
-  play(song: Song) {
-    this.selectedSong = song;
-    this.audio.src = song.path;
-    this.audio.load();
-    this.audio.play().then();
-
+  constructor(private songsService: SongsService) {
     this.audio.onplay = () => {
       this.isPlaying = true;
       this.startPositionUpdates();
       this.updatePlaybackState();
-      this.updateMediaMetadata(song);
+      if (this.selectedSong) {
+        this.updateMediaMetadata(this.selectedSong);
+      }
     };
-
     this.audio.onpause = () => {
       this.isPlaying = false;
       this.stopPositionUpdates();
       this.updatePlaybackState();
     };
-
+    this.audio.ontimeupdate = () => {
+      if (this.audio.currentTime >= PLAY_LOG_SECONDS) {
+        this.logPlay();
+      }
+    };
     this.audio.onended = () => {
+      this.logPlay(); // songs shorter than PLAY_LOG_SECONDS
       this.stopPositionUpdates();
       this.handleEnded();
     };
+  }
+
+  /** load + play a song */
+  play(song: Song) {
+    this.prepare(song);
+    // Browsers refuse to start audio without a tap first; the play button still works then.
+    this.audio.play().catch(() => this.isPlaying = false);
+  }
+
+  /** Loads a song into the player without starting it (a restored or shared song). */
+  prepare(song: Song) {
+    this.selectedSong = song;
+    this.playLogged = false;
+    this.audio.src = song.path;
+    this.audio.load();
+    this.positionUpdated$.next({currentPos: 0, maxPos: 0});
 
     this.isInitialized = true;
     this.selectedSongChanged$.next(song);
@@ -132,8 +141,8 @@ export class MediaController {
     if (songString) {
       const song = JSON.parse(songString) as Song;
       this.selectedSong = song;
-      this.playList = JSON.parse(localStorage.getItem(this.selectedPlaylistKey)!) as Song[];
-      this.play(song);
+      this.playList = JSON.parse(localStorage.getItem(this.selectedPlaylistKey) ?? '[]') as Song[];
+      this.prepare(song);
       return true;
     }
     return false;
@@ -152,12 +161,20 @@ export class MediaController {
     if (this.repeatType === 'repeat_one' && this.selectedSong) {
       this.play(this.selectedSong);
     } else if (this.repeatType === 'repeat_on') {
-      const idx = this.playList.indexOf(this.selectedSong!);
-      const next = this.playList[(idx + 1) % this.playList.length];
+      const next = this.playList[(this.currentIndex + 1) % this.playList.length];
       this.play(next);
     } else {
       this.stop();
     }
+  }
+
+  private logPlay() {
+    const song = this.selectedSong;
+    if (this.playLogged || !song) {
+      return;
+    }
+    this.playLogged = true;
+    this.songsService.logPlay(song.id).subscribe({error: () => {}});
   }
 
   private startPositionUpdates() {

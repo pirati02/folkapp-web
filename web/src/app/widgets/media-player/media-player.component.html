@@ -1,4 +1,5 @@
 <div class="media-player d-flex flex-column" style="gap: 1rem;" *ngIf="mediaController.isInitialized">
+  <div class="notice" *ngIf="notice" role="status">{{ notice }}</div>
   <div class="d-flex flex-row" style="gap: 1rem;">
     <span style="flex-grow: 1;">
       {{ mediaController.selectedSong?.name || 'დასაკრავი სია ცარიელია' }}
@@ -21,8 +22,7 @@
       <button class="action-button" [disabled]="!mediaController.isInitialized" (click)="changeRepeatType()">
         <mat-icon>{{ repeatType }}</mat-icon>
       </button>
-      <button class="action-button" [disabled]="!mediaController.isInitialized"
-              [ngStyle]="{'display': this.canShare? '': 'none'}" (click)="share()">
+      <button class="action-button" [disabled]="!mediaController.isInitialized" (click)="share()">
         <mat-icon>share</mat-icon>
       </button>
     </div>
