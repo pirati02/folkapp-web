@@ -130,6 +130,39 @@ describe('songs', () => {
     expect(rows[0]).toEqual({ PlayCount: 11, DownloadCount: 1 });
   });
 
+  it('counts a batch of plays and downloads', async () => {
+    const unknown = '00000000-0000-4000-8000-000000000000';
+    const response = await ctx.app.inject({
+      method: 'POST',
+      url: '/songs/metrics',
+      payload: {
+        plays: { [ids.chakrulo]: 3, [ids.mravalzhamieri]: 1000, [unknown]: 2 },
+        downloads: { [ids.chakrulo]: 1, [ids.shenXarVenaxi]: 2 },
+      },
+    });
+    expect(response.json()).toEqual({ body: { counted: 3 }, error: null });
+
+    const { rows } = await ctx.db.query<{ Id: string; PlayCount: number; DownloadCount: number }>(
+      `SELECT "Id", "PlayCount", "DownloadCount" FROM media."Song" WHERE "Id" = ANY($1::uuid[]) ORDER BY "Id"`,
+      [[ids.chakrulo, ids.mravalzhamieri, ids.shenXarVenaxi]],
+    );
+    expect(rows).toEqual([
+      { Id: ids.chakrulo, PlayCount: 13, DownloadCount: 1 },
+      { Id: ids.mravalzhamieri, PlayCount: 103, DownloadCount: 0 }, // capped at 100 per batch
+      { Id: ids.shenXarVenaxi, PlayCount: 7, DownloadCount: 2 },
+    ]);
+  });
+
+  it('accepts an empty batch and rejects a malformed one', async () => {
+    const empty = await ctx.app.inject({ method: 'POST', url: '/songs/metrics', payload: {} });
+    expect(empty.json().body).toEqual({ counted: 0 });
+
+    for (const payload of [{ plays: { 'not-a-uuid': 1 } }, { plays: { [ids.chakrulo]: 0 } }]) {
+      const response = await ctx.app.inject({ method: 'POST', url: '/songs/metrics', payload });
+      expect(response.statusCode).toBe(400);
+    }
+  });
+
   it('rejects an invalid log body', async () => {
     const response = await ctx.app.inject({ method: 'PUT', url: `/songs/${ids.chakrulo}/log`, payload: { logType: 7 } });
     expect(response.statusCode).toBe(400);

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {RepeatType} from '../models/repeate.type';
 import {Song} from '../models/song';
-import {SongsService} from './songs.service';
+import {MetricsService} from './metrics.service';
 import {LibraryService} from './library.service';
 import {OfflineService} from './offline.service';
 import {LocalStore} from './local-store.service';
@@ -50,7 +50,7 @@ export class MediaController {
   }
 
   constructor(
-    private songsService: SongsService,
+    private metrics: MetricsService,
     private library: LibraryService,
     private offline: OfflineService,
     private store: LocalStore,
@@ -263,7 +263,7 @@ export class MediaController {
       return;
     }
     this.playLogged = true;
-    this.songsService.logPlay(song.id).subscribe({error: () => {}});
+    this.metrics.play(song.id);
   }
 
   private savePosition() {

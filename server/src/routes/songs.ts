@@ -10,6 +10,15 @@ type SongRequest = FastifyRequest<{ Params: { id: string } }>;
 // SongLogType in the .NET API: Played = 0, Downloaded = 1.
 const logBody = z.object({ logType: z.union([z.literal(0), z.literal(1)]) });
 
+/** One device can't sensibly play a song more often than this between two batches. */
+const MAX_COUNT_PER_BATCH = 100;
+const MAX_SONGS_PER_BATCH = 500;
+const counts = z
+  .record(z.guid(), z.number().int().min(1).transform((count) => Math.min(count, MAX_COUNT_PER_BATCH)))
+  .refine((record) => Object.keys(record).length <= MAX_SONGS_PER_BATCH, `At most ${MAX_SONGS_PER_BATCH} songs`)
+  .default({});
+const metricsBody = z.object({ plays: counts, downloads: counts });
+
 const popularQuery = z.object({
   type: z.coerce.number().pipe(z.union([z.literal(SongType.Song), z.literal(SongType.Chant)])).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(10),
@@ -107,4 +116,22 @@ export function songRoutes(app: FastifyInstance, { db, storage, links, shortenUr
     return ok(true);
   });
 
+  /** Plays and downloads the web app counted since its last batch, as `{ plays: { [songId]: n }, downloads }`. */
+  app.post('/songs/metrics', async (request) => {
+    const { plays, downloads } = parse(metricsBody, request.body);
+    const songIds = [...new Set([...Object.keys(plays), ...Object.keys(downloads)])];
+    if (!songIds.length) {
+      return ok({ counted: 0 });
+    }
+
+    // Songs removed from the catalogue since are skipped, so the app doesn't keep resending them.
+    const { rowCount } = await db.query(
+      `UPDATE media."Song" s
+       SET "PlayCount" = s."PlayCount" + c.plays, "DownloadCount" = s."DownloadCount" + c.downloads
+       FROM unnest($1::uuid[], $2::int[], $3::int[]) AS c(id, plays, downloads)
+       WHERE s."Id" = c.id`,
+      [songIds, songIds.map((id) => plays[id] ?? 0), songIds.map((id) => downloads[id] ?? 0)],
+    );
+    return ok({ counted: rowCount });
+  });
 }

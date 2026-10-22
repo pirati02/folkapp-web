@@ -2,7 +2,7 @@ import {Inject, Injectable} from "@angular/core";
 import {BehaviorSubject, Subject} from "rxjs";
 import {Song} from "../models/song";
 import {LocalStore} from "./local-store.service";
-import {SongsService} from "./songs.service";
+import {MetricsService} from "./metrics.service";
 
 /** Must match AUDIO_CACHE in public/sw.js, which plays the files from it. */
 const AUDIO_CACHE = 'folkapp-audio-v1';
@@ -37,7 +37,7 @@ export class OfflineService {
   constructor(
     @Inject('BASE_URL') private baseUrl: string,
     private store: LocalStore,
-    private songsService: SongsService
+    private metrics: MetricsService
   ) {
     this.downloads$ = new BehaviorSubject(store.get<DownloadedSong[]>(DOWNLOADS_KEY, []));
   }
@@ -129,7 +129,7 @@ export class OfflineService {
 
     const {id, name, songType, artistName, artistId, path} = song;
     this.saveList([...this.downloads$.value, {song: <Song>{id, name, songType, artistName, artistId, path}, size: blob.size}]);
-    this.songsService.logDownload(song.id).subscribe({error: () => {}});
+    this.metrics.download(song.id);
     // Downloads are lost if the browser clears the site's data; ask it not to.
     navigator.storage?.persist?.().catch(() => {});
   }
