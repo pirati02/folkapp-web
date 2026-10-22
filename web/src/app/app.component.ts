@@ -12,13 +12,14 @@ import { BottomBarService } from './services/bottom-bar.service';
 import { PlayerViewService } from './services/player-view.service';
 import { NoticeService } from './services/notice.service';
 import { OfflineService } from './services/offline.service';
+import { InstallPromptComponent } from './widgets/install-prompt/install-prompt.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, MediaPlayerComponent, BottomBarComponent, QueueComponent, FullPlayerComponent]
+  imports: [CommonModule, RouterOutlet, MediaPlayerComponent, BottomBarComponent, QueueComponent, FullPlayerComponent, InstallPromptComponent]
 })
 export class AppComponent {
   online = navigator.onLine;

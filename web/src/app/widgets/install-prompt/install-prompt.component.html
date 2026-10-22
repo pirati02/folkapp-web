@@ -1,0 +1,24 @@
+<div class="install-card" role="dialog" aria-labelledby="install-title" *ngIf="installPrompt.kind as kind">
+  <img class="install-icon" src="icons/icon-192.png" alt="">
+  <div class="install-body">
+    <div class="install-title" id="install-title">დაამატე FolkApp მთავარ ეკრანზე</div>
+    <ng-container *ngIf="kind === 'native'; else iosHint">
+      <div class="install-text">გაიხსნება როგორც აპი — სწრაფად და ინტერნეტის გარეშეც.</div>
+      <div class="install-actions">
+        <button class="install-later" (click)="installPrompt.close()">არა, მადლობა</button>
+        <button class="install-button" (click)="installPrompt.install()">დაყენება</button>
+      </div>
+    </ng-container>
+    <ng-template #iosHint>
+      <div class="install-text">
+        დააჭირე <mat-icon inline aria-label="Share">ios_share</mat-icon> და აირჩიე „Add to Home Screen“.
+      </div>
+      <div class="install-actions">
+        <button class="install-button" (click)="installPrompt.close()">გასაგებია</button>
+      </div>
+    </ng-template>
+  </div>
+  <button class="install-close" (click)="installPrompt.close()" aria-label="დახურვა">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>

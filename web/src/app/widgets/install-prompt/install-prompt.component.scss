@@ -1,0 +1,86 @@
+// Sits just above the mini player, like the notices, but takes taps.
+.install-card {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: calc(100% + 8px);
+  z-index: 250; // over the playlist, under the full-screen player
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 4px 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-raised);
+  color: var(--text);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  font-family: var(--font-body);
+}
+
+.install-icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.install-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.install-title {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.install-text {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.4;
+
+  mat-icon {
+    vertical-align: -2px;
+    color: var(--brand);
+  }
+}
+
+.install-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.install-later,
+.install-button {
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.install-later {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+}
+
+.install-button {
+  border: none;
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.install-close {
+  flex: none;
+  display: flex;
+  margin-top: -6px;
+  padding: 6px;
+  border: none;
+  background: none;
+  color: var(--text-faint);
+  cursor: pointer;
+}
