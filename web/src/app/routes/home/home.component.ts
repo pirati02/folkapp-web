@@ -1,4 +1,4 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, HostListener, OnDestroy, OnInit} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {MatIconModule} from "@angular/material/icon";
@@ -26,7 +26,7 @@ interface Pick {
   standalone: true,
   imports: [CommonModule, RouterLink, MatIconModule, MatProgressSpinnerModule, SongListComponent]
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   loading = true;
   failed = false;
   dashboard?: Dashboard;
@@ -35,6 +35,7 @@ export class HomeComponent implements OnInit {
   /** A feast shows this many of its songs until "all" is tapped. */
   readonly FEAST_PREVIEW = 5;
   expanded = new Set<string>();
+  private midnightTimer?: ReturnType<typeof setTimeout>;
 
   constructor(
     public mediaController: MediaController,
@@ -48,9 +49,23 @@ export class HomeComponent implements OnInit {
     this.load();
   }
 
+  ngOnDestroy(): void {
+    clearTimeout(this.midnightTimer);
+  }
+
+  /** An installed app resumes where it was left, so the day's picks may be yesterday's. */
+  @HostListener('document:visibilitychange')
+  refreshIfStale() {
+    if (document.visibilityState === 'visible' && this.dashboard && this.dashboard.date !== localIsoDate()) {
+      this.load();
+    }
+  }
+
   load() {
-    this.loading = true;
+    // Swapping in a new day's picks keeps the old ones on screen until they arrive.
+    this.loading = !this.dashboard;
     this.failed = false;
+    this.scheduleMidnightRefresh();
     forkJoin({
       dashboard: this.dashboardService.dashboard(localIsoDate()),
       popular: this.dashboardService.popular(POPULAR_COUNT)
@@ -66,10 +81,17 @@ export class HomeComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.failed = true;
+        this.failed = !this.dashboard;
         this.loading = false;
       }
     });
+  }
+
+  private scheduleMidnightRefresh() {
+    clearTimeout(this.midnightTimer);
+    const midnight = new Date();
+    midnight.setHours(24, 0, 5, 0);
+    this.midnightTimer = setTimeout(() => this.load(), midnight.getTime() - Date.now());
   }
 
   dayLabel(holiday: Holiday): string {
